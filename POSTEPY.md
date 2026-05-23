@@ -105,3 +105,17 @@
 - Składnia wszystkich 4 plików UI: OK (node --check)
 - index.html: 1280 → 615 linii po fazie 7
 - Kolejność `<script>`: ... → ai/ai.js → ui/modal.js → ui/components.js → ui/calendar.js → ui/render.js → main script
+
+## 2026-05-23
+
+### Faza 8 modularyzacji — finalne sprzątanie (src/features/)
+
+- Stworzono `src/features/notifications.js` (4 funkcje + setInterval): `requestNotifPermission`, `sendNotif`, `checkNotifications`, `enableNotifs`
+- Stworzono `src/features/export.js` (7 funkcji): `exportData`, `importData`, `exportWonCSV`, `exportViaEmail`, `exportToClipboard`, `handleImportText`, `handleImportFile`
+- Stworzono `src/features/pwa.js`: SW rejestracja, `beforeinstallprompt`/`appinstalled` listenery, `installPWA`
+- Oczyszczono inline `<script>` w index.html — zostało TYLKO: `load()`, inicjalizacja `_sb`, inicjalizacja `S`, listener menu-btn, cleanup localStorage, `DOMContentLoaded` → `initAuth`, `setTimeout(autoBackup)`, `setTimeout(renderNotifStatus/checkNotifications)`
+- Składnia wszystkich 3 plików features: OK (node --check)
+- index.html: 615 → **182 linii** / **11KB** po fazie 8 (cel < 20KB — osiągnięty)
+- Łącznie 20 skryptów modułowych + 1 inline skrypt inicjalizacyjny
+- Git: pierwsze commitowanie projektu — gałąź `refactor` + `main` (ten sam root commit)
+- GitHub Pages: https://b4stek80-cell.github.io/konkurs-tracker/
