@@ -275,12 +275,47 @@ function renderStats(){
   const bestAgency=decidedAgencies[0];
   const worstAgency=decidedAgencies[decidedAgencies.length-1];
 
+  // ── Wykres miesięczny ──────────────────────────────────────────────────────
+  const monthlyChart=(()=>{
+    if(!S.entries.length) return '';
+    const months=[];
+    for(let i=5;i>=0;i--){
+      const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+      months.push({key:d.toISOString().slice(0,7),label:d.toLocaleDateString('pl-PL',{month:'short'})});
+    }
+    const data=months.map(m=>{
+      const me=S.entries.filter(e=>e.date&&e.date.startsWith(m.key));
+      return{...m,e:me.length,w:me.filter(e=>['won','prize_received','prize_pending'].includes(e.status)).length};
+    });
+    const maxV=Math.max(...data.map(m=>m.e),1);
+    const H=80; const W=100/6;
+    const bars=data.map((m,i)=>{
+      const x=i*W+0.5; const w=W-1;
+      const hE=(m.e/maxV)*H; const hW=(m.w/maxV)*H;
+      return `<rect x="${x}%" y="${H-hE}" width="${w}%" height="${hE}" rx="3" fill="#6366f133"/>
+        <rect x="${x}%" y="${H-hW}" width="${w}%" height="${hW}" rx="3" fill="#22c55e55"/>
+        <text x="${x+w/2}%" y="${H+14}" text-anchor="middle" fill="#64748b" font-size="10">${m.label}</text>
+        ${m.e?`<text x="${x+w/2}%" y="${H-hE-3}" text-anchor="middle" fill="#818cf8" font-size="9">${m.e}</text>`:''}
+        ${m.w?`<text x="${x+w/2}%" y="${H-hW-3}" text-anchor="middle" fill="#4ade80" font-size="9">+${m.w}</text>`:''}`;
+    }).join('');
+    return `<div class="card" style="margin-bottom:16px">
+      <div style="font-weight:700;color:#f1f5f9;margin-bottom:10px;font-size:14px">📈 Aktywność — ostatnie 6 miesięcy</div>
+      <div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:#94a3b8">
+        <span><span style="display:inline-block;width:10px;height:10px;background:#6366f133;border:1px solid #6366f155;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Zgłoszenia</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#22c55e55;border:1px solid #22c55e77;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Wygrane</span>
+      </div>
+      <svg width="100%" height="${H+20}" style="overflow:visible">${bars}</svg>
+    </div>`;
+  })();
+
   return `
     <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:20px">📊 Statystyki</h1>
     <div class="stat-grid">
       ${[['Zgłoszeń',total,'#f1f5f9'],['Wygranych',won,'#22c55e'],['Przegranych',lost,'#ef4444'],['Oczekuje',sent+pending,'#f59e0b'],['Win Rate',wr+'%','#818cf8']].map(([l,v,c])=>`
         <div class="stat-card"><div class="val" style="color:${c}">${v}</div><div class="lbl">${l}</div></div>`).join('')}
     </div>
+
+    ${monthlyChart}
 
     ${bestAgency||worstAgency?`<div class="card" style="margin-bottom:16px">
       <div style="font-weight:700;color:#f1f5f9;margin-bottom:12px;font-size:14px">💡 Podpowiedzi</div>
@@ -447,6 +482,14 @@ function showBackupModal(){
           📊 Pobierz CSV wygranych
         </button>
       </div>
+      <div style="background:#06b6d411;border:1px solid #06b6d433;border-radius:10px;padding:14px">
+        <div style="font-size:14px;font-weight:700;color:#22d3ee;margin-bottom:6px">📅 Eksport do kalendarza (ICS)</div>
+        <div style="font-size:11px;color:#64748b;margin-bottom:8px">Zaimportuj deadliny konkursów do Google Calendar, Apple Calendar lub Outlook. Każdy konkurs = wydarzenie z przypomnieniem dzień wcześniej.</div>
+        <button onclick="exportCalendarICS()" style="width:100%;padding:10px;background:#06b6d4;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
+          📅 Pobierz plik .ics
+        </button>
+      </div>
+
       <div style="background:#6366f111;border:1px solid #6366f133;border-radius:10px;padding:14px">
         <div style="font-size:14px;font-weight:700;color:#818cf8;margin-bottom:6px">⬆️ Importuj (wklej ze schowka)</div>
         <div style="font-size:11px;color:#64748b;margin-bottom:8px">Wklej wcześniej skopiowany JSON poniżej i kliknij Importuj</div>

@@ -44,6 +44,8 @@ function openReceiptsModal(playerId){
         <input type="hidden" id="rc_photo_data" value="">
       </div>
       <div style="margin-bottom:6px"><button id="ocr_btn" onclick="runReceiptOCR()" style="width:100%;padding:8px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">🔍 Skanuj paragon</button></div>
+      <input type="hidden" id="rc_contest_id" value="">
+      <div id="rc_contest_suggest" style="display:none"></div>
       <div style="display:flex;gap:8px;justify-content:flex-end">
         <button class="btn-sec btn-sm" onclick="document.getElementById('receipt_add_form').style.display='none'">Anuluj</button>
         <button class="btn-primary btn-sm" onclick="saveReceipt('${playerId}')">Zapisz paragon</button>
@@ -173,14 +175,28 @@ async function runReceiptOCR(){
   if(r.amount&&document.getElementById('rc_amount')) document.getElementById('rc_amount').value=r.amount;
   if(r.date&&document.getElementById('rc_date')) document.getElementById('rc_date').value=r.date;
   const filled=[r.shop,r.receipt_nr,r.cash_register,r.amount,r.date].filter(Boolean).length;
-  if(filled>0){
-    const parts=[];
-    if(r.shop) parts.push(r.shop);
-    if(r.nip) parts.push('NIP: '+r.nip);
-    if(r.receipt_nr) parts.push('nr '+r.receipt_nr);
-    alert('✅ Odczytano: '+parts.join(' · ')+'. Sprawdź i popraw pola przed zapisem.');
-  } else {
-    alert('Nie udało się odczytać danych. Spróbuj z lepszym zdjęciem.');
+  if(!filled){ alert('Nie udało się odczytać danych. Spróbuj z lepszym zdjęciem.'); return; }
+
+  // Auto-przypisanie do konkursu — znajdź pasujące po sklepie
+  if(r.shop){
+    const shopLower=r.shop.toLowerCase();
+    const matching=S.contests.filter(c=>{
+      if(c.status!=='active') return false;
+      if(!c.shops||!c.shops.length) return false;
+      return c.shops.some(s=>s.toLowerCase().includes(shopLower)||shopLower.includes(s.toLowerCase()));
+    });
+    const suggestEl=document.getElementById('rc_contest_suggest');
+    if(suggestEl&&matching.length>0){
+      suggestEl.innerHTML=`<div style="background:#22c55e11;border:1px solid #22c55e33;border-radius:8px;padding:10px;margin-top:8px">
+        <div style="font-size:12px;font-weight:700;color:#4ade80;margin-bottom:6px">🎯 Pasujące konkursy dla sklepu "${esc(r.shop)}":</div>
+        ${matching.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1e2a3a;gap:8px">
+          <div style="font-size:12px;color:#f1f5f9">${esc(c.name)}<span style="color:#64748b;font-size:11px"> · do ${c.deadline||'?'}</span></div>
+          <button onclick="document.getElementById('rc_contest_id')&&(document.getElementById('rc_contest_id').value='${c.id}');this.parentElement.parentElement.parentElement.style.background='#6366f122';this.textContent='✓'"
+            style="font-size:11px;padding:3px 8px;background:#22c55e22;color:#4ade80;border:1px solid #22c55e44;border-radius:5px;cursor:pointer;white-space:nowrap">Przypisz</button>
+        </div>`).join('')}
+      </div>`;
+      suggestEl.style.display='block';
+    }
   }
 }
 async function saveReceipt(playerId){

@@ -217,5 +217,48 @@ async function handleImportFile(inp){
   reader.onerror=()=>alert('❌ Nie można odczytać pliku');
   reader.readAsText(file);
 }
+function exportCalendarICS(){
+  const active=S.contests.filter(c=>c.status==='active'&&c.deadline);
+  if(!active.length){ alert('Brak aktywnych konkursów z terminem'); return; }
+  const esc2=s=>(s||'').replace(/[\\;,]/g,'\\$&').replace(/\n/g,'\\n');
+  const d2s=s=>s.replace(/-/g,'');
+  const now=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const events=active.map(c=>{
+    const ag=S.agencies.find(a=>a.id===c.agencyId);
+    const desc=[
+      c.prize?'Nagroda: '+c.prize:'',
+      ag?'Agencja: '+ag.name:'',
+      c.task?'Zadanie: '+c.task:'',
+      c.link?'Link: '+c.link:'',
+    ].filter(Boolean).join('\\n');
+    return [
+      'BEGIN:VEVENT',
+      'UID:kt-'+c.id+'@konkurs-tracker',
+      'DTSTAMP:'+now,
+      'DTSTART;VALUE=DATE:'+d2s(c.deadline),
+      'DTEND;VALUE=DATE:'+d2s(c.deadline),
+      'SUMMARY:🏆 '+esc2(c.name),
+      desc?'DESCRIPTION:'+desc:'',
+      c.link?'URL:'+fixUrl(c.link):'',
+      'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY',
+      'DESCRIPTION:Jutro deadline: '+esc2(c.name),
+      'END:VALARM','END:VEVENT',
+    ].filter(Boolean).join('\r\n');
+  });
+  const ics=[
+    'BEGIN:VCALENDAR','VERSION:2.0',
+    'PRODID:-//KonkursTracker//PL',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH',
+    'X-WR-CALNAME:KonkursTracker — Deadliny',
+    'X-WR-TIMEZONE:Europe/Warsaw',
+    ...events,'END:VCALENDAR',
+  ].join('\r\n');
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='KonkursTracker_kalendarz_'+ktTodayStr()+'.ics';
+  a.click(); URL.revokeObjectURL(url);
+}
+
 // — eksport na window (onclick= compatibility)
-Object.assign(window, {exportData, importData, exportWonCSV, exportViaEmail, exportToClipboard, handleImportText, handleImportFile});
+Object.assign(window, {exportData, importData, exportWonCSV, exportViaEmail, exportToClipboard, handleImportText, handleImportFile, exportCalendarICS});

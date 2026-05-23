@@ -46,12 +46,31 @@ function checkNotifications(){
 // Sprawdzaj powiadomienia co godzinę (gdy aplikacja otwarta)
 setInterval(checkNotifications, 60*60*1000);
 
+// Wyślij dane konkursów do SW (dla powiadomień w tle)
+async function syncContestsToSW(){
+  if(!('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const upcoming = S.contests
+      .filter(c => c.status === 'active' && (c.deadline || c.results_date))
+      .map(c => ({ id: c.id, name: c.name, deadline: c.deadline, prize: c.prize, results_date: c.results_date }));
+    if(reg.active) reg.active.postMessage({ type: 'KT_STORE_CONTESTS', payload: { contests: upcoming } });
+    // Rejestracja Periodic Background Sync (Chrome Android + PWA)
+    if('periodicSync' in reg) {
+      const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+      if(status.state === 'granted') {
+        await reg.periodicSync.register('kt-deadline-check', { minInterval: 12 * 60 * 60 * 1000 });
+      }
+    }
+  } catch(e) { /* nie wspierane */ }
+}
+
 // ─── Panel ustawień powiadomień w sidebar footer ──────────────────────────────
 
 async function enableNotifs(){
   const ok=await requestNotifPermission();
-  if(ok){ checkNotifications(); }
+  if(ok){ checkNotifications(); syncContestsToSW(); }
   renderNotifStatus();
 }
 // — eksport na window (onclick= compatibility)
-Object.assign(window, {requestNotifPermission, sendNotif, checkNotifications, enableNotifs});
+Object.assign(window, {requestNotifPermission, sendNotif, checkNotifications, enableNotifs, syncContestsToSW});

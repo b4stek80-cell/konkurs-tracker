@@ -47,5 +47,5 @@ document.getElementById('menu-btn').addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
   window.initAuth()
   setTimeout(window.autoBackup, 3000)
-  setTimeout(() => { window.renderNotifStatus(); window.checkNotifications() }, 1000)
+  setTimeout(() => { window.renderNotifStatus(); window.checkNotifications(); window.syncContestsToSW(); }, 1000)
 })

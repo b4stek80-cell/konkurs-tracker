@@ -357,8 +357,39 @@ function renderEntries(){
   const playerSel=fsel('ef_player',[['','Wszyscy gracze'],...S.players.map(p=>[p.id,p.name])],entryFilterPlayer);
   const statusSel=fsel('ef_status',[['','Wszystkie statusy'],['sent','Wysłano'],['pending','Oczekuje wyników'],['contacted','Kontaktowali się'],['prize_pending','Nagroda w drodze'],['prize_received','Nagroda odebrana'],['won','Wygrano'],['lost','Przegrano'],['no_response','Brak odpowiedzi'],['expired','Termin minął']],entryFilterStatus);
 
+  // ── Czekam na wyniki — wyróżnione zgłoszenia z nadchodzącą datą wyników ───
+  const awaitingResults=(()=>{
+    const waiting=S.entries.filter(e=>['sent','pending','contacted'].includes(e.status));
+    const withResultDate=waiting.map(e=>{
+      const c=S.contests.find(x=>x.id===e.contestId);
+      if(!c||!c.results_date) return null;
+      const d=daysLeft(c.results_date);
+      if(d===null||d<0||d>14) return null;
+      return {e,c,d};
+    }).filter(Boolean).sort((a,b)=>a.d-b.d);
+    if(!withResultDate.length) return '';
+    return `<div style="background:#8b5cf611;border:1px solid #8b5cf633;border-radius:12px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-weight:700;color:#a78bfa;margin-bottom:8px;font-size:13px">🎯 Ogłoszenie wyników w ciągu 14 dni (${withResultDate.length})</div>
+      ${withResultDate.map(({e,c,d})=>{
+        const p=S.players.find(x=>x.id===e.playerId);
+        const col=d<=2?'#ef4444':d<=7?'#f59e0b':'#8b5cf6';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#f1f5f9">${esc(c.name)}</div>
+            <div style="font-size:11px;color:#64748b">${esc(p?.name||'?')} · wyniki: ${c.results_date}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;font-size:13px;color:${col}">${d===0?'DZIŚ!':d+'d'}</span>
+            <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600">${badge(e.status)} ▾</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  })();
+
   return `
     <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:16px">Zgłoszenia</h1>
+    ${awaitingResults}
     <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="row" style="gap:10px">${playerSel}${statusSel}</div>
       <button onclick="addEntry()" style="padding:9px 16px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">+ Dodaj zgłoszenie</button>
