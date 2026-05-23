@@ -397,11 +397,11 @@ function renderEntries(){
 
   return `
     <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:16px">Zgłoszenia</h1>
-    ${awaitingResults}
     <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="row" style="gap:10px">${playerSel}${statusSel}</div>
       <button onclick="addEntry()" style="padding:9px 16px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">+ Dodaj zgłoszenie</button>
     </div>
+    ${awaitingResults}
     ${list||'<p style="color:#475569;text-align:center;padding:48px">Brak zgłoszeń</p>'}`;
 }
 
