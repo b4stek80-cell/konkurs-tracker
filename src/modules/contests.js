@@ -134,7 +134,7 @@ function contestCardHtml(c){
       <div style="flex:1;min-width:0">
         <!-- Wiersz 1: nazwa + status + pilne -->
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-          <span style="font-weight:700;color:#f1f5f9;font-size:14px">${esc(c.name)}</span>
+          <span style="font-weight:700;color:#f1f5f9;font-size:14px">${esc(c.name)}${c.products?`<span style="font-weight:400;color:#94a3b8;font-size:13px"> (${esc(c.products)})</span>`:''}</span>
           ${badge(c.status)}
           ${isUrgent?'<span style="font-size:11px;color:#ef4444;font-weight:700">🔴 PILNE</span>':''}
         </div>
@@ -333,6 +333,7 @@ function contestForm(c={}){
     ${field('Agencja',fsel('c_agency',agencyOpts(),c.agencyId||''),
       !c.agencyId?'<span style="color:#64748b;font-size:11px">💡 Bez agencji statystyki będą niepełne</span>':'')}
     ${field('Nagroda',finp('c_prize',c.prize||'','text','np. 10 000 zł, Samochód'))}
+    ${field('Produkty konkursowe',finp('c_products',c.products||'','text','np. Pepsi, Lay\'s, Tymbark (pojawi się w nawiasie przy nazwie)'),'<span style="font-size:11px;color:#64748b">Opcjonalnie — gdy nazwa konkursu nie wskazuje jakie produkty kupić</span>')}
     <div class="grid2">
       ${field('Termin zgłoszeń',finp('c_deadline',c.deadline||'','date'),
       !c.deadline?'<span style="color:#f59e0b;font-size:11px">⚠️ Brak terminu — konkurs nie pojawi się w kalendarzu</span>':'')}
@@ -356,7 +357,7 @@ function addContest(){
     if(_dl && new Date(_dl) < new Date() && !window._deadlineWarned){
       if(!confirm('⚠️ Deadline '+fmt(_dl)+' już minął. Dodać mimo to?')) return false;
     }
-    S.contests.push({id:uid(),name,agencyId:gv('c_agency'),prize:gv('c_prize'),prize_value:gv('c_prize_value'),deadline:gv('c_deadline'),results_date:gv('c_results_date'),conditions:gv('c_cond'),task:gv('c_task'),link:gv('c_link'),rules_link:gv('c_rules_link'),status:gv('c_status'),notes:gv('c_notes'),tags:getSelectedTags(),shops:getSelectedShops()});
+    S.contests.push({id:uid(),name,agencyId:gv('c_agency'),prize:gv('c_prize'),prize_value:gv('c_prize_value'),products:gv('c_products'),deadline:gv('c_deadline'),results_date:gv('c_results_date'),conditions:gv('c_cond'),task:gv('c_task'),link:gv('c_link'),rules_link:gv('c_rules_link'),status:gv('c_status'),notes:gv('c_notes'),tags:getSelectedTags(),shops:getSelectedShops()});
     persistAndSync(KEYS.contests,S.contests); render();
   }});
 }
@@ -364,7 +365,7 @@ function editContest(id){
   const c=S.contests.find(x=>x.id===id);
   openModal({title:'Edytuj konkurs',html:contestForm(c),submitLabel:'Zapisz',onSubmit:()=>{
     const name=gv('c_name').trim(); if(!name) return false;
-    Object.assign(c,{name,agencyId:gv('c_agency'),prize:gv('c_prize'),prize_value:gv('c_prize_value'),deadline:gv('c_deadline'),results_date:gv('c_results_date'),conditions:gv('c_cond'),task:gv('c_task'),link:gv('c_link'),rules_link:gv('c_rules_link'),status:gv('c_status'),notes:gv('c_notes'),tags:getSelectedTags(),shops:getSelectedShops()});
+    Object.assign(c,{name,agencyId:gv('c_agency'),prize:gv('c_prize'),prize_value:gv('c_prize_value'),products:gv('c_products'),deadline:gv('c_deadline'),results_date:gv('c_results_date'),conditions:gv('c_cond'),task:gv('c_task'),link:gv('c_link'),rules_link:gv('c_rules_link'),status:gv('c_status'),notes:gv('c_notes'),tags:getSelectedTags(),shops:getSelectedShops()});
     persistAndSync(KEYS.contests,S.contests); render();
   }});
 }

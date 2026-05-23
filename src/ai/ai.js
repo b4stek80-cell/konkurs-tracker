@@ -138,6 +138,7 @@ const GEMINI_PROMPT = (url) =>
   `REQUIRES_PURCHASE: "TAK - [co kupić i za ile]" lub "NIE".`+
   `SELECTION_METHOD: jury/losowanie/głosowanie.`+
   `TAX_INFO: "organizator płaci" lub "uczestnik płaci" lub pusty string.`+
+  `PRODUCTS: konkretne produkty które trzeba kupić (np. "Pepsi 1,5l", "Lay's, Doritos", "Aquafresh lub Sensodyne"). Pusty string jeśli brak wymogu zakupu konkretnego produktu lub nie można ustalić.`+
   `SHOPS: znajdź paragraf "Sklepy konkursowe" lub "Sklep konkursowy" (zwykle punkt 2.X regulaminu) i wyciągnij z niego nazwy sieci/sklepów. Przykład: "sklepy stacjonarne sieci Auchan" → wpisz "Auchan". "sklepy Biedronka i Carrefour" → wpisz "Biedronka, Carrefour". Uwaga: w PDF tekst może mieć dodatkowe spacje między literami — ignoruj je. Zostaw PUSTE jeśli zakup w dowolnym sklepie lub brak konkretnych sieci lub nie ma wymogu zakupu.`+
   `ENTRY_LINK: adres URL strony do zgłoszeń (szukaj: strona internetowa konkursu, www., zgłoszenia pod adresem, formularz dostępny na). Przepisz pełny URL z https://.`+
   `TASK: dokładna treść zadania konkursowego — pytanie/polecenie do wykonania przez uczestnika, przepisz dosłownie (max 300 znaków). Pusty string jeśli loteria.`+
@@ -167,12 +168,13 @@ async function analyzeWithGemini(apiKey,text,url){
           selection_method:{type:"STRING"},
           tax_info:{type:"STRING"},
           notes:{type:"STRING"},
+          products:{type:"STRING"},
           shops:{type:"STRING"},
           entry_link:{type:"STRING"},
           task:{type:"STRING"},
           results_date:{type:"STRING"}
         },
-        required:["name","agency","prize","prize_value","deadline","conditions","entry_limit","requires_purchase","selection_method","tax_info","notes","shops","entry_link","task","results_date"]
+        required:["name","agency","prize","prize_value","deadline","conditions","entry_limit","requires_purchase","selection_method","tax_info","notes","products","shops","entry_link","task","results_date"]
       }
       }
     })
@@ -198,6 +200,7 @@ async function analyzeWithGeminiVision(apiKey, pdfBase64){
     'REQUIRES_PURCHASE: "TAK - co kupic" lub "NIE".'+
     'SELECTION_METHOD: jury/losowanie/glosowanie.'+
     'TAX_INFO: "organizator placi" lub "uczestnik placi" lub pusty string.'+
+    'PRODUCTS: konkretne produkty ktore trzeba kupic (np. Pepsi 1,5l, Lays Doritos, Aquafresh lub Sensodyne). Pusty string jesli brak wymogu zakupu konkretnego produktu.'+
     'SHOPS: znajdz paragraf Sklepy konkursowe lub Sklep konkursowy (zwykle punkt 2.X) i wyciagnij nazwy sieci. Przyklad: sklepy stacjonarne sieci Auchan = wpisz Auchan, sklepy Biedronka i Lidl = wpisz Biedronka, Lidl. Tekst moze miec podwojne spacje - ignoruj je i czytaj nazwy normalnie. Pusty string tylko gdy dowolny sklep lub brak wymogu zakupu.'+
     'ENTRY_LINK: URL strony do zgloszen (szukaj: strona internetowa konkursu, www., formularz, adres: — przepisz pelny URL z https:// lub www.).'+
     'TASK: dokladna tresc zadania konkursowego — pytanie/polecenie, przepisz dokladnie (max 300 znakow). Pusty string jesli loteria.'+
@@ -322,6 +325,7 @@ function renderAI(){
         <div id="af_agency_hint" style="font-size:11px;color:#475569;margin-top:4px"></div>
       </div>
       <div class="field"><label>Nagroda</label><input id="af_prize" placeholder="np. 10 000 zł"></div>
+      <div class="field"><label>Produkty konkursowe</label><input id="af_products" placeholder="np. Pepsi, Lay's (pojawi się w nawiasie przy nazwie)"></div>
       <div class="grid2">
         <div class="field"><label>Termin zgłoszeń</label><input type="date" id="af_deadline"></div>
         <div class="field"><label>Termin wyników</label><input type="date" id="af_results_date"></div>
@@ -429,6 +433,7 @@ async function pdfLoad(file){
 function fillAIForm(result,url){
   document.getElementById('af_name').value=result.name||'';
   document.getElementById('af_prize').value=result.prize||'';
+  setTimeout(()=>{ const p=document.getElementById('af_products'); if(p) p.value=result.products||''; },50);
   // Zapisz prize_value w ukrytym polu
   let afPvEl=document.getElementById('af_prize_value_hidden');
   if(!afPvEl){ afPvEl=document.createElement('input'); afPvEl.type='hidden'; afPvEl.id='af_prize_value_hidden'; document.body.appendChild(afPvEl); }
@@ -568,6 +573,7 @@ function saveAIContest(){
   S.contests.push({
     id:uid(), name, agencyId,
     prize:     document.getElementById('af_prize').value,
+    products:  document.getElementById('af_products')?.value||'',
     deadline:  document.getElementById('af_deadline').value,
     results_date: document.getElementById('af_results_date')?.value||'',
     conditions:document.getElementById('af_cond').value,
