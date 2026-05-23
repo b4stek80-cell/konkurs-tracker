@@ -311,39 +311,72 @@ Dodaj najpierw zgłoszenie do konkursu.`);return}let r=S.players.find(e=>e.id===
     <div class="field"><label>Gracz: ${esc(r?.name||`?`)}</label>${fsel(`assign_entry`,i,``)}</div>`,submitLabel:`Przypisz`,onSubmit:()=>{let t=gv(`assign_entry`);if(!t)return alert(`Wybierz zgłoszenie`),!1;let n=S.entries.find(e=>e.id===t);n&&(n.receiptId=e,persistAndSync(KEYS.entries,S.entries),render())}})}Object.assign(window,{receiptStatus:Ga,openReceiptsModal:Q,addReceiptForm:Ka,previewReceiptPhoto:qa,compressImage:Ja,uploadReceiptPhoto:Ya,deleteReceiptPhoto:Xa,ocrReceipt:Za,runReceiptOCR:Qa,saveReceipt:$a,refreshReceiptList:eo,receiptRowHtml:to,dedupeReceipts:no,editReceipt:ro,erRunOCR:io,deleteReceipt:ao,settleReceipt:oo,unsettleReceipt:so,showReceiptPhoto:co,renderReceiptsTab:lo,renderTab:uo,deleteReceiptGlobal:fo,addReceiptGlobal:po,assignReceiptToPlayer:mo,assignReceiptToEntry:ho});function go(e){let t=daysLeft(e);return t===null?``:t<0?`<span style="color:#6b7280">(minął)</span>`:t===0?`<span style="color:#8b5cf6;font-weight:700">dziś!</span>`:`<span style="color:#8b5cf6;font-weight:700">(za ${t}d)</span>`}function _o(e){let t=daysLeft(e);return t===null?`<span style="color:#475569">—</span>`:`<span style="color:${t<0?`#475569`:t<=2?`#ef4444`:t<=7?`#f59e0b`:`#22c55e`};font-weight:700;font-size:13px">${t<0?`Minął`:t===0?`Dziś!`:`${t}d`}</span>`}function vo(e){let t=TAGS.find(t=>t.id===e);return t?`<span style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}44;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;white-space:nowrap">${t.label}</span>`:``}function yo(e=[]){return`<div class="field"><label>Tagi</label><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px">`+TAGS.map(t=>{let n=e.includes(t.id);return`<button type="button" onclick="toggleTag('${t.id}',this)"
         data-tagid="${t.id}"
         style="background:${n?t.color+`33`:`#1e2a3a`};color:${n?t.color:`#64748b`};border:1px solid ${n?t.color+`55`:`#2d3548`};border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-weight:${n?700:400}"
-        >${t.label}</button>`}).join(``)+`</div></div>`}function bo(e,t){let n=t.style.fontWeight===`700`,r=TAGS.find(t=>t.id===e);r&&(n?(t.style.background=`#1e2a3a`,t.style.color=`#64748b`,t.style.borderColor=`#2d3548`,t.style.fontWeight=`400`):(t.style.background=r.color+`33`,t.style.color=r.color,t.style.borderColor=r.color+`55`,t.style.fontWeight=`700`))}function xo(){return[...document.querySelectorAll(`[data-tagid]`)].filter(e=>e.style.fontWeight===`700`).map(e=>e.dataset.tagid)}function So(e){return`<span style="background:#ef444422;color:#f87171;border:1px solid #ef444455;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;white-space:nowrap">🏪 `+esc(e)+`</span>`}function Co(e){e||=[];let t=e.join(`, `);return`<div class="field"><label>Sklepy (gdzie wymagany zakup)</label><div style="font-size:11px;color:#475569;margin-bottom:5px">Wpisz nazwy sklepów oddzielone przecinkami. AI uzupełni automatycznie z regulaminu.</div><input id="c_shops_input" type="text" value="`+esc(t)+`" placeholder="np. Biedronka, Lidl, Żabka" style="background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 12px;width:100%;font-size:13px;outline:none;box-sizing:border-box"></div>`}function wo(){let e=document.getElementById(`c_shops_input`);return!e||!e.value.trim()?[]:e.value.split(`,`).map(e=>e.trim()).filter(Boolean)}function To(e){let t=ktTodayStr();return S.entries.filter(n=>n.contestId===e&&n.date===t).length}function Eo(e){let t=parseDailyLimit(e.notes||e.conditions||``);if(!t)return``;let n=To(e.id),r=t-n,i=r<=0?`#ef4444`:r<=2?`#f59e0b`:`#22c55e`,a=r<=0?`#ef444418`:r<=2?`#f59e0b18`:`#22c55e18`,o=r<=0?`⛔ Limit dzienny wyczerpany`:`📊 Dziś: `+n+`/`+t+` · zostało `+r;return`<div style="display:inline-flex;align-items:center;gap:5px;background:`+a+`;border:1px solid `+i+`44;border-radius:6px;padding:3px 9px;font-size:11px;color:`+i+`;font-weight:600;margin-top:4px">`+o+`</div>`}function Do(e){let t=S.contests.find(t=>t.id===e);t&&(t.status=`ended`,persistAndSync(KEYS.contests,S.contests),render())}function Oo(e){let t=S.contests.find(t=>t.id===e);t&&(t.status=`active`,persistAndSync(KEYS.contests,S.contests),render())}function ko(e){let t=S.agencies.find(t=>t.id===e.agencyId),n=S.entries.filter(t=>t.contestId===e.id),r=daysLeft(e.deadline),i=r!==null&&r>=0&&r<=2&&e.status===`active`,a=e.shops&&e.shops.length>0;return`<div class="card" style="border-color:${i?`#ef444466`:a?`#ef444433`:`#2d3548`}">
-      <div class="row" style="justify-content:space-between;align-items:flex-start">
-        <div style="flex:1;min-width:200px">
-          <div class="row" style="gap:8px;margin-bottom:4px;flex-wrap:wrap">
-            <span style="font-weight:700;color:#f1f5f9">${esc(e.name)}</span>
-            ${badge(e.status)}
-            ${i?`<span style="font-size:12px;color:#ef4444">🔴 PILNE</span>`:``}
-          </div>
-          ${e.prize?`<div style="font-size:13px;color:#fbbf24;margin-bottom:3px">🏆 ${esc(e.prize)}${e.prize_value?` · `+esc(e.prize_value):``}</div>`:``}
-          ${e.shops&&e.shops.length?`<div style="background:#ef444411;border:1px solid #ef444433;border-radius:8px;padding:6px 10px;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center">
-            <span style="font-size:12px;color:#ef4444;font-weight:800">⚠️ TYLKO W SKLEPACH:</span>
-            ${e.shops.map(e=>So(e)).join(``)}
-          </div>`:``}
-          ${e.tags&&e.tags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${e.tags.map(e=>vo(e)).join(``)}</div>`:``}
-          <div style="font-size:12px;color:#64748b">
-            ${esc(t?.name||`—`)} · zgłoszenia: ${fmt(e.deadline)} · ${_o(e.deadline)}
-            ${e.results_date?`<span style="color:#8b5cf6"> · wyniki: ${fmt(e.results_date)} ${go(e.results_date)}</span>`:``}
-          </div>
-          ${e.conditions?`<div style="font-size:12px;color:#94a3b8;margin-top:4px">📋 ${esc(e.conditions.slice(0,800))}${e.conditions.length>800?`…`:``}</div>`:``}
-          ${e.task?`<div style="background:#6366f111;border:1px solid #6366f133;border-radius:6px;padding:6px 10px;margin-top:5px;font-size:12px;color:#818cf8"><strong>🎯 Zadanie:</strong> ${esc(e.task)}</div>`:``}
-          ${e.notes?`<div style="font-size:12px;color:#64748b;margin-top:3px;font-style:italic">💡 ${esc(e.notes.slice(0,800))}${e.notes.length>800?`…`:``}</div>`:``}
-          <div style="font-size:12px;color:#475569;margin-top:4px">${n.length} zgłoszeń${e.status===`ended`&&n.length>0?(()=>{let e=n.filter(e=>[`won`,`prize_received`,`prize_pending`].includes(e.status)).length;return e>0?` · <span style="color:#22c55e;font-weight:600">🏆 `+e+` wygranych</span>`:` · <span style="color:#ef4444">0 wygranych</span>`})():``}</div>
+        >${t.label}</button>`}).join(``)+`</div></div>`}function bo(e,t){let n=t.style.fontWeight===`700`,r=TAGS.find(t=>t.id===e);r&&(n?(t.style.background=`#1e2a3a`,t.style.color=`#64748b`,t.style.borderColor=`#2d3548`,t.style.fontWeight=`400`):(t.style.background=r.color+`33`,t.style.color=r.color,t.style.borderColor=r.color+`55`,t.style.fontWeight=`700`))}function xo(){return[...document.querySelectorAll(`[data-tagid]`)].filter(e=>e.style.fontWeight===`700`).map(e=>e.dataset.tagid)}function So(e){return`<span style="background:#ef444422;color:#f87171;border:1px solid #ef444455;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;white-space:nowrap">🏪 `+esc(e)+`</span>`}function Co(e){e||=[];let t=e.join(`, `);return`<div class="field"><label>Sklepy (gdzie wymagany zakup)</label><div style="font-size:11px;color:#475569;margin-bottom:5px">Wpisz nazwy sklepów oddzielone przecinkami. AI uzupełni automatycznie z regulaminu.</div><input id="c_shops_input" type="text" value="`+esc(t)+`" placeholder="np. Biedronka, Lidl, Żabka" style="background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 12px;width:100%;font-size:13px;outline:none;box-sizing:border-box"></div>`}function wo(){let e=document.getElementById(`c_shops_input`);return!e||!e.value.trim()?[]:e.value.split(`,`).map(e=>e.trim()).filter(Boolean)}function To(e){let t=ktTodayStr();return S.entries.filter(n=>n.contestId===e&&n.date===t).length}function Eo(e){let t=parseDailyLimit(e.notes||e.conditions||``);if(!t)return``;let n=To(e.id),r=t-n,i=r<=0?`#ef4444`:r<=2?`#f59e0b`:`#22c55e`,a=r<=0?`#ef444418`:r<=2?`#f59e0b18`:`#22c55e18`,o=r<=0?`⛔ Limit dzienny wyczerpany`:`📊 Dziś: `+n+`/`+t+` · zostało `+r;return`<div style="display:inline-flex;align-items:center;gap:5px;background:`+a+`;border:1px solid `+i+`44;border-radius:6px;padding:3px 9px;font-size:11px;color:`+i+`;font-weight:600;margin-top:4px">`+o+`</div>`}function Do(e){let t=S.contests.find(t=>t.id===e);t&&(t.status=`ended`,persistAndSync(KEYS.contests,S.contests),render())}function Oo(e){let t=S.contests.find(t=>t.id===e);t&&(t.status=`active`,persistAndSync(KEYS.contests,S.contests),render())}function ko(e){let t=S.agencies.find(t=>t.id===e.agencyId),n=S.entries.filter(t=>t.contestId===e.id),r=daysLeft(e.deadline),i=r!==null&&r>=0&&r<=2&&e.status===`active`,a=e.shops&&e.shops.length>0,o=`c_`+e.id.replace(/-/g,``),s=(e,t,n,r=120)=>{if(!n)return``;let i=n.length<=r;return`<div style="margin-top:5px">
+      <span style="font-size:12px;color:#94a3b8">${esc(n.slice(0,r))}${i?``:`…`}</span>
+      ${i?``:`<span id="${e}_full" style="display:none;font-size:12px;color:#94a3b8">${esc(n.slice(r))}</span>
+      <button onclick="const f=document.getElementById('${e}_full');const show=f.style.display==='none';f.style.display=show?'inline':'none';this.textContent=show?'▴ zwiń':'▾ więcej'"
+        style="background:none;border:none;color:#475569;font-size:11px;cursor:pointer;padding:0 4px">▾ więcej</button>`}
+    </div>`};return`<div class="card" style="border-color:${i?`#ef444466`:a?`#ef444433`:`#2d3548`};padding:12px 14px">
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+
+      <div style="flex:1;min-width:0">
+        <!-- Wiersz 1: nazwa + status + pilne -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <span style="font-weight:700;color:#f1f5f9;font-size:14px">${esc(e.name)}</span>
+          ${badge(e.status)}
+          ${i?`<span style="font-size:11px;color:#ef4444;font-weight:700">🔴 PILNE</span>`:``}
+        </div>
+
+        <!-- Wiersz 2: nagroda -->
+        ${e.prize?`<div style="font-size:13px;color:#fbbf24;margin-bottom:6px">🏆 ${esc(e.prize)}${e.prize_value?` · <span style="color:#fb923c">`+esc(e.prize_value)+`</span>`:``}</div>`:``}
+
+        <!-- Wiersz 3: meta — agencja · deadline · wyniki -->
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#64748b;margin-bottom:6px">
+          ${t?`<span style="color:#94a3b8;font-weight:500">${esc(t.name)}</span><span style="color:#2d3548">·</span>`:``}
+          <span>📅 ${fmt(e.deadline)}</span>
+          ${_o(e.deadline)}
+          ${e.results_date?`<span style="color:#2d3548">·</span><span style="color:#8b5cf6">🎯 wyniki: ${fmt(e.results_date)} ${go(e.results_date)}</span>`:``}
+        </div>
+
+        <!-- Wiersz 4: sklepy (jeśli są) -->
+        ${a?`<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px">
+          <span style="font-size:11px;color:#ef4444;font-weight:700">⚠️ tylko w:</span>
+          ${e.shops.map(e=>So(e)).join(``)}
+        </div>`:``}
+
+        <!-- Wiersz 5: tagi -->
+        ${e.tags&&e.tags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${e.tags.map(e=>vo(e)).join(``)}</div>`:``}
+
+        <!-- Zadanie — zawsze widoczne (zwykle krótkie) -->
+        ${e.task?`<div style="background:#6366f111;border:1px solid #6366f133;border-radius:6px;padding:6px 10px;margin-bottom:5px;font-size:12px;color:#818cf8"><strong>🎯</strong> ${esc(e.task)}</div>`:``}
+
+        <!-- Warunki — zwinięte -->
+        ${e.conditions?`<div style="margin-top:4px"><span style="font-size:11px;color:#475569;font-weight:600">📋 Warunki:</span>${s(o+`_cond`,``,e.conditions,120)}</div>`:``}
+
+        <!-- Notatki — zwinięte -->
+        ${e.notes?`<div style="margin-top:3px"><span style="font-size:11px;color:#475569;font-weight:600">💡 Notatki:</span>${s(o+`_notes`,``,e.notes,80)}</div>`:``}
+
+        <!-- Stopka: liczba zgłoszeń + limit -->
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">
+          <span style="font-size:12px;color:#475569">${n.length} zgłoszeń${e.status===`ended`&&n.length>0?(()=>{let e=n.filter(e=>[`won`,`prize_received`,`prize_pending`].includes(e.status)).length;return e>0?` · <span style="color:#22c55e;font-weight:600">🏆 `+e+` wygranych</span>`:` · <span style="color:#ef4444">0 wygranych</span>`})():``}</span>
           ${e.status===`active`?Eo(e):``}
         </div>
-        <div class="row" style="gap:6px;flex-wrap:wrap;align-self:flex-start;margin-top:4px">
-          ${e.status===`active`?`<button class="btn-sm" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33" onclick="addEntry('${e.id}')">+ Zgłoś</button>`:``}
-          ${e.link?`<button onclick="window.open('${esc(fixUrl(e.link))}','_blank','noopener,noreferrer')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer">🔗 Zgłoś się</button>`:``}
-          ${e.rules_link?`<a href="${esc(fixUrl(e.rules_link))}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#2d3548;color:#94a3b8;border-radius:7px;text-decoration:none;font-size:12px">📄 Regulamin</a>`:``}
+      </div>
+
+      <!-- Przyciski akcji — pionowo po prawej -->
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
+        ${e.status===`active`?`<button class="btn-sm" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33;white-space:nowrap" onclick="addEntry('${e.id}')">+ Zgłoś</button>`:``}
+        ${e.link?`<button onclick="window.open('${esc(fixUrl(e.link))}','_blank','noopener,noreferrer')" style="padding:4px 10px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">🔗 Zgłoś się</button>`:``}
+        ${e.rules_link?`<a href="${esc(fixUrl(e.rules_link))}" target="_blank" style="padding:4px 10px;background:#1e2a3a;color:#64748b;border:1px solid #2d3548;border-radius:7px;text-decoration:none;font-size:12px;white-space:nowrap">📄 Regulamin</a>`:``}
+        <div style="display:flex;gap:5px">
           <button class="btn-sec btn-sm" onclick="editContest('${e.id}')">✏️</button>
           <button class="btn-sm" style="background:#ef444422;color:#f87171;border:1px solid #ef444433" onclick="deleteContest('${e.id}')">🗑</button>
         </div>
       </div>
-    </div>`}function Ao(){let e=[[`active`,`Aktywne`],[`planned`,`Planowane`],[`ended`,`📦 Archiwum`],[`all`,`Wszystkie`]],t=contestSearch.toLowerCase().trim(),n=S.contests.filter(e=>{let n=contestFilter===`all`||e.status===contestFilter,r=!contestTagFilter||e.tags&&e.tags.includes(contestTagFilter),i=!contestShopFilter||e.shops&&e.shops.includes(contestShopFilter),a=!t||e.name&&e.name.toLowerCase().includes(t)||e.prize&&e.prize.toLowerCase().includes(t)||e.conditions&&e.conditions.toLowerCase().includes(t)||S.agencies.find(t=>t.id===e.agencyId)?.name?.toLowerCase().includes(t);return n&&r&&i&&a}).sort((e,t)=>{if(contestSort===`deadline`)return!e.deadline&&!t.deadline?0:e.deadline?t.deadline?e.deadline.localeCompare(t.deadline):-1:1;if(contestSort===`name`)return(e.name||``).localeCompare(t.name||``);if(contestSort===`prize`){let n=e=>{let t=(e||``).match(/(\d[\d\s]*(?:[,.]\d+)?)/);return t?parseFloat(t[1].replace(/\s/g,``).replace(`,`,`.`)):0};return n(t.prize_value)-n(e.prize_value)}return contestSort===`added`?(t.id||``).localeCompare(e.id||``):0}),r=n.map(e=>ko(e)).join(``);return`
+
+    </div>
+  </div>`}function Ao(){let e=[[`active`,`Aktywne`],[`planned`,`Planowane`],[`ended`,`📦 Archiwum`],[`all`,`Wszystkie`]],t=contestSearch.toLowerCase().trim(),n=S.contests.filter(e=>{let n=contestFilter===`all`||e.status===contestFilter,r=!contestTagFilter||e.tags&&e.tags.includes(contestTagFilter),i=!contestShopFilter||e.shops&&e.shops.includes(contestShopFilter),a=!t||e.name&&e.name.toLowerCase().includes(t)||e.prize&&e.prize.toLowerCase().includes(t)||e.conditions&&e.conditions.toLowerCase().includes(t)||S.agencies.find(t=>t.id===e.agencyId)?.name?.toLowerCase().includes(t);return n&&r&&i&&a}).sort((e,t)=>{if(contestSort===`deadline`)return!e.deadline&&!t.deadline?0:e.deadline?t.deadline?e.deadline.localeCompare(t.deadline):-1:1;if(contestSort===`name`)return(e.name||``).localeCompare(t.name||``);if(contestSort===`prize`){let n=e=>{let t=(e||``).match(/(\d[\d\s]*(?:[,.]\d+)?)/);return t?parseFloat(t[1].replace(/\s/g,``).replace(`,`,`.`)):0};return n(t.prize_value)-n(e.prize_value)}return contestSort===`added`?(t.id||``).localeCompare(e.id||``):0}),r=n.map(e=>ko(e)).join(``);return`
     <div class="row" style="justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
       <h1 style="font-size:22px;font-weight:800;color:#f1f5f9">Konkursy</h1>
       <div class="row" style="gap:8px;flex-wrap:wrap">
