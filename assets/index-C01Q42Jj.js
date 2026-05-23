@@ -459,18 +459,16 @@ Dodać mimo to?`))return!1;if(r){let t=S.entries.find(t=>t.receiptId===r&&t.cont
       </div>
     </div>`}).join(``),t=fsel(`ef_player`,[[``,`Wszyscy gracze`],...S.players.map(e=>[e.id,e.name])],entryFilterPlayer),n=fsel(`ef_status`,[[``,`Wszystkie statusy`],[`sent`,`Wysłano`],[`pending`,`Oczekuje wyników`],[`contacted`,`Kontaktowali się`],[`prize_pending`,`Nagroda w drodze`],[`prize_received`,`Nagroda odebrana`],[`won`,`Wygrano`],[`lost`,`Przegrano`],[`no_response`,`Brak odpowiedzi`],[`expired`,`Termin minął`]],entryFilterStatus);return`
     <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:16px">Zgłoszenia</h1>
-    ${(()=>{let e=S.entries.filter(e=>[`sent`,`pending`,`contacted`].includes(e.status)).map(e=>{let t=S.contests.find(t=>t.id===e.contestId);if(!t||!t.results_date)return null;let n=daysLeft(t.results_date);return n===null||n<0||n>14?null:{e,c:t,d:n}}).filter(Boolean).sort((e,t)=>e.d-t.d);return e.length?`<div style="background:#8b5cf611;border:1px solid #8b5cf633;border-radius:12px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-weight:700;color:#a78bfa;margin-bottom:8px;font-size:13px">🎯 Ogłoszenie wyników w ciągu 14 dni (${e.length})</div>
-      ${e.map(({e,c:t,d:n})=>{let r=S.players.find(t=>t.id===e.playerId),i=n<=2?`#ef4444`:n<=7?`#f59e0b`:`#8b5cf6`;return`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
-          <div>
-            <div style="font-size:13px;font-weight:600;color:#f1f5f9">${esc(t.name)}</div>
-            <div style="font-size:11px;color:#64748b">${esc(r?.name||`?`)} · wyniki: ${t.results_date}</div>
+    ${(()=>{let e=S.entries.filter(e=>[`sent`,`pending`,`contacted`].includes(e.status)).map(e=>{let t=S.contests.find(t=>t.id===e.contestId);if(!t)return null;let n=t.deadline&&daysLeft(t.deadline)<0,r=!!t.results_date;return!n&&!r?null:{e,c:t,dr:t.results_date?daysLeft(t.results_date):null}}).filter(Boolean).sort((e,t)=>e.dr!==null&&t.dr===null?-1:e.dr===null&&t.dr!==null?1:e.dr!==null&&t.dr!==null?e.dr-t.dr:(e.c.deadline||``).localeCompare(t.c.deadline||``));return e.length?`<div style="background:#8b5cf611;border:1px solid #8b5cf633;border-radius:12px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-weight:700;color:#a78bfa;margin-bottom:8px;font-size:13px">🎯 Czekam na wyniki <span style="background:#8b5cf633;border-radius:10px;padding:1px 8px;font-size:12px;margin-left:4px">${e.length}</span></div>
+      ${e.slice(0,8).map(({e,c:t,dr:n})=>{let r=S.players.find(t=>t.id===e.playerId),i=n===null?`#64748b`:n<=2?`#ef4444`:n<=7?`#f59e0b`:`#8b5cf6`,a=n===null?`brak daty wyników`:n===0?`wyniki DZIŚ!`:n<0?`wyniki minęły`:`wyniki za `+n+`d`;return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.name)}</div>
+            <div style="font-size:11px;color:#64748b">${esc(r?.name||`?`)} · <span style="color:${i}">${a}</span></div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-weight:700;font-size:13px;color:${i}">${n===0?`DZIŚ!`:n+`d`}</span>
-            <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600">${badge(e.status)} ▾</button>
-          </div>
+          <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600;flex-shrink:0">${badge(e.status)} ▾</button>
         </div>`}).join(``)}
+      ${e.length>8?`<div style="font-size:12px;color:#64748b;padding-top:6px;text-align:center">...i ${e.length-8} więcej</div>`:``}
     </div>`:``})()}
     <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="row" style="gap:10px">${t}${n}</div>
