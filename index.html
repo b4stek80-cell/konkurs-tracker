@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🏆 KonkursTracker</title>
+  <meta name="theme-color" content="#0a0e1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KonkursTracker">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="src/config.js"></script>
+  <script src="src/state.js"></script>
+  <script src="src/utils.js"></script>
+  <script src="src/db/supabase.js"></script>
+  <script src="src/db/sync.js"></script>
+  <script src="src/auth/auth.js"></script>
+  <script src="src/modules/agencies.js"></script>
+  <script src="src/modules/players.js"></script>
+  <script src="src/modules/receipts.js"></script>
+  <script src="src/modules/contests.js"></script>
+  <script src="src/modules/entries.js"></script>
+  <script src="src/ai/ai.js"></script>
+  <script src="src/ui/modal.js"></script>
+  <script src="src/ui/components.js"></script>
+  <script src="src/ui/calendar.js"></script>
+  <script src="src/ui/render.js"></script>
+  <script src="src/features/notifications.js"></script>
+  <script src="src/features/export.js"></script>
+  <script src="src/features/pwa.js"></script>
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="lock-screen">
+    <!-- Panel logowania -->
+    <div id="auth_login" class="lock-card">
+      <div style="font-size:48px;margin-bottom:8px">🏆</div>
+      <div style="font-size:20px;font-weight:800;color:#f1f5f9;margin-bottom:4px">KonkursTracker</div>
+      <div style="font-size:13px;color:#64748b;margin-bottom:20px">Zaloguj się aby kontynuować</div>
+      <input type="email" id="auth_email" placeholder="Email..."
+        style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:12px 16px;width:100%;font-size:15px;outline:none;margin-bottom:10px;box-sizing:border-box">
+      <input type="password" id="auth_pass" placeholder="Hasło..."
+        style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:12px 16px;width:100%;font-size:15px;outline:none;margin-bottom:10px;box-sizing:border-box"
+        onkeydown="if(event.key==='Enter') handleLogin()">
+      <div id="auth_err" style="color:#ef4444;font-size:12px;margin-bottom:10px;min-height:16px"></div>
+      <button onclick="handleLogin()" id="auth_login_btn"
+        style="width:100%;padding:12px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px">
+        Zaloguj się →
+      </button>
+      <button onclick="showAuthScreen('register')"
+        style="width:100%;padding:10px;background:transparent;color:#6366f1;border:1px solid #6366f133;border-radius:10px;font-size:13px;cursor:pointer">
+        Nie mam konta — zarejestruj się
+      </button>
+    </div>
+
+    <!-- Panel rejestracji -->
+    <div id="auth_register" class="lock-card" style="display:none">
+      <div style="font-size:36px;margin-bottom:8px">📝</div>
+      <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:4px">Nowe konto</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:16px">Rejestracja tylko przez zaproszenie</div>
+      <input type="email" id="reg_email" placeholder="Email..."
+        style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:11px 14px;width:100%;font-size:14px;outline:none;margin-bottom:8px;box-sizing:border-box">
+      <input type="password" id="reg_pass" placeholder="Hasło (min. 6 znaków)..."
+        style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:11px 14px;width:100%;font-size:14px;outline:none;margin-bottom:8px;box-sizing:border-box">
+      <div style="margin-bottom:8px">
+        <span onclick="document.getElementById('reg_invite_wrap').style.display=document.getElementById('reg_invite_wrap').style.display==='none'?'block':'none'"
+          style="font-size:12px;color:#475569;cursor:pointer;user-select:none">
+          🔗 Mam kod zaproszenia do rodziny
+        </span>
+        <div id="reg_invite_wrap" style="display:none;margin-top:6px">
+          <input type="text" id="reg_invite" placeholder="Kod zaproszenia..."
+            style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:11px 14px;width:100%;font-size:14px;outline:none;box-sizing:border-box;text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase()">
+        </div>
+      </div>
+      <div id="reg_err" style="color:#ef4444;font-size:12px;margin-bottom:8px;min-height:14px"></div>
+      <button onclick="handleRegister()" id="reg_btn"
+        style="width:100%;padding:11px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">
+        Zarejestruj się →
+      </button>
+      <button onclick="showAuthScreen('login')"
+        style="width:100%;padding:9px;background:transparent;color:#64748b;border:1px solid #2d3548;border-radius:10px;font-size:12px;cursor:pointer">
+        ← Wróć do logowania
+      </button>
+    </div>
+
+    <!-- Panel nowej rodziny -->
+    <div id="auth_family" class="lock-card" style="display:none">
+      <div style="font-size:36px;margin-bottom:8px">🏆</div>
+      <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:4px">Jak chcesz używać aplikacji?</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:16px">Solo lub z rodziną — możesz zmienić to później</div>
+      <input type="text" id="fam_name" placeholder="Nazwa rodziny (np. Świderscy)..."
+        style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:11px 14px;width:100%;font-size:14px;outline:none;margin-bottom:8px;box-sizing:border-box">
+      <button onclick="handleCreateFamily()"
+        style="width:100%;padding:11px;background:#22c55e;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px">
+        ✨ Utwórz nową rodzinę
+      </button>
+      <div style="text-align:center;color:#475569;font-size:12px;margin:4px 0 12px">— lub —</div>
+      <button onclick="handleSolo()"
+        style="width:100%;padding:11px;background:#334155;color:#94a3b8;border:1px solid #475569;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:16px">
+        👤 Używaj solo (tylko dla mnie)
+      </button>
+      <div style="text-align:center;color:#475569;font-size:12px;margin-bottom:12px">— lub masz już kod zaproszenia —</div>
+      <input type="text" id="fam_invite" placeholder="Kod zaproszenia..."
+        style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:11px 14px;width:100%;font-size:14px;outline:none;margin-bottom:8px;box-sizing:border-box;text-transform:uppercase"
+        oninput="this.value=this.value.toUpperCase()">
+      <button onclick="handleJoinFamily()"
+        style="width:100%;padding:11px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">
+        🔗 Dołącz do rodziny
+      </button>
+      <div id="fam_err" style="color:#ef4444;font-size:12px;margin-top:6px;min-height:14px"></div>
+    </div>
+  </div>
+
+<div id="app">
+  <div id="topbar" style="height:48px;min-height:48px">
+    <div class="row" style="gap:10px">
+      <button id="menu-btn" style="background:none;border:none;color:#64748b;padding:4px;font-size:20px;line-height:1">☰</button>
+      <span class="logo">🏆 KonkursTracker</span>
+      <span id="sync_status" title="" style="font-size:16px;margin-left:4px;cursor:pointer" onclick="manualRefresh()" title="Kliknij aby odświeżyć dane"></span><span id="realtime_dot" title="Realtime" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#475569;margin-left:3px;vertical-align:middle;cursor:default"></span>
+    </div>
+    <div class="row" style="gap:8px">
+      <button id="install_btn" onclick="installPWA()" style="display:none;align-items:center;gap:4px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;font-weight:600">📲 Zainstaluj</button>
+      <span id="urgent-pill" style="display:none;background:#ef4444;color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700"></span>
+    </div>
+  </div>
+  <div id="body">
+    <div id="sidebar-overlay" onclick="closeSidebar()" style="z-index:40"></div>
+    <div id="sidebar">
+      <nav id="nav"></nav>
+      <div class="sidebar-foot"><button onclick="showBackupModal()" style="width:100%;padding:8px;background:#1e2a3a;border:none;border-radius:7px;color:#64748b;font-size:11px;cursor:pointer;margin-bottom:6px;text-align:left">💾 Backup / Import danych</button><button onclick="showInviteModal()" style="width:100%;padding:8px;background:#1e2a3a;border:none;border-radius:7px;color:#6366f1;font-size:11px;cursor:pointer;margin-bottom:6px;text-align:left">🔗 Zaproś do rodziny</button><div id="sidebar_user_email" style="font-size:10px;color:#475569;padding:4px 8px;margin-bottom:4px"></div><button onclick="authSignOut()" style="width:100%;padding:8px;background:#ef444422;border:none;border-radius:7px;color:#f87171;font-size:11px;cursor:pointer;margin-bottom:8px;text-align:left">🚪 Wyloguj się</button>Dane lokalne · przeglądarka<br><div id="notif_status" style="margin-top:4px"></div></div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<!-- MODAL CONTAINER -->
+<div id="modal-root"></div>
+
+<script>
+// ── Inicjalizacja ────────────────────────────────────────────────────────────
+const load = (k,d) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d} };
+
+_sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+S = {
+  players:  load(KEYS.players,[]),
+  agencies: load(KEYS.agencies,[]),
+  profiles: load(KEYS.profiles,[]),
+  contests: load(KEYS.contests,[]),
+  entries:  load(KEYS.entries,[]),
+  receipts: load(KEYS.receipts,[]),
+  templates: load(KEYS.templates,[]),
+  tab: 'dashboard',
+  sideOpen: window.innerWidth > 768,
+};
+
+document.getElementById('menu-btn').addEventListener('click',()=>{
+  S.sideOpen=!S.sideOpen; renderNav();
+});
+
+// Wyczyść stare base64 zdjęć z localStorage (oszczędność miejsca)
+try {
+  const receiptsRaw = localStorage.getItem('kk_receipts');
+  if(receiptsRaw){
+    const rr = JSON.parse(receiptsRaw);
+    localStorage.setItem('kk_receipts', JSON.stringify(
+      rr.map(r=>({...r, photo_local:'', photo: r.photo?.startsWith('http')?r.photo:''}))
+    ));
+  }
+} catch(e){}
+
+document.addEventListener('DOMContentLoaded', initAuth);
+setTimeout(autoBackup, 3000);
+setTimeout(()=>{ renderNotifStatus(); checkNotifications(); }, 1000);
+</script>
+</body>
+</html>
