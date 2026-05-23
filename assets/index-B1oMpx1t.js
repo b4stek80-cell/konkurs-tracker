@@ -457,8 +457,12 @@ Dodać mimo to?`))return!1;if(r){let t=S.entries.find(t=>t.receiptId===r&&t.cont
           <button class="btn-sm" style="background:#ef444422;color:#f87171;border:1px solid #ef444433" onclick="deleteEntry('${e.id}')">🗑</button>
         </div>
       </div>
-    </div>`}).join(``),t=fsel(`ef_player`,[[``,`Wszyscy gracze`],...S.players.map(e=>[e.id,e.name])],entryFilterPlayer),n=fsel(`ef_status`,[[``,`Wszystkie statusy`],[`sent`,`Wysłano`],[`pending`,`Oczekuje wyników`],[`contacted`,`Kontaktowali się`],[`prize_pending`,`Nagroda w drodze`],[`prize_received`,`Nagroda odebrana`],[`won`,`Wygrano`],[`lost`,`Przegrano`],[`no_response`,`Brak odpowiedzi`],[`expired`,`Termin minął`]],entryFilterStatus);return`
+    </div>`}).join(``);return`
     <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:16px">Zgłoszenia</h1>
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="row" style="gap:10px">${fsel(`ef_player`,[[``,`Wszyscy gracze`],...S.players.map(e=>[e.id,e.name])],entryFilterPlayer)}${fsel(`ef_status`,[[``,`Wszystkie statusy`],[`sent`,`Wysłano`],[`pending`,`Oczekuje wyników`],[`contacted`,`Kontaktowali się`],[`prize_pending`,`Nagroda w drodze`],[`prize_received`,`Nagroda odebrana`],[`won`,`Wygrano`],[`lost`,`Przegrano`],[`no_response`,`Brak odpowiedzi`],[`expired`,`Termin minął`]],entryFilterStatus)}</div>
+      <button onclick="addEntry()" style="padding:9px 16px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">+ Dodaj zgłoszenie</button>
+    </div>
     ${(()=>{let e=S.entries.filter(e=>[`sent`,`pending`,`contacted`].includes(e.status)).map(e=>{let t=S.contests.find(t=>t.id===e.contestId);if(!t)return null;let n=t.deadline&&daysLeft(t.deadline)<0,r=!!t.results_date;return!n&&!r?null:{e,c:t,dr:t.results_date?daysLeft(t.results_date):null}}).filter(Boolean).sort((e,t)=>e.dr!==null&&t.dr===null?-1:e.dr===null&&t.dr!==null?1:e.dr!==null&&t.dr!==null?e.dr-t.dr:(e.c.deadline||``).localeCompare(t.c.deadline||``));return e.length?`<div style="background:#8b5cf611;border:1px solid #8b5cf633;border-radius:12px;padding:12px 14px;margin-bottom:14px">
       <div style="font-weight:700;color:#a78bfa;margin-bottom:8px;font-size:13px">🎯 Czekam na wyniki <span style="background:#8b5cf633;border-radius:10px;padding:1px 8px;font-size:12px;margin-left:4px">${e.length}</span></div>
       ${e.slice(0,8).map(({e,c:t,dr:n})=>{let r=S.players.find(t=>t.id===e.playerId),i=n===null?`#64748b`:n<=2?`#ef4444`:n<=7?`#f59e0b`:`#8b5cf6`,a=n===null?`brak daty wyników`:n===0?`wyniki DZIŚ!`:n<0?`wyniki minęły`:`wyniki za `+n+`d`;return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
@@ -470,10 +474,6 @@ Dodać mimo to?`))return!1;if(r){let t=S.entries.find(t=>t.receiptId===r&&t.cont
         </div>`}).join(``)}
       ${e.length>8?`<div style="font-size:12px;color:#64748b;padding-top:6px;text-align:center">...i ${e.length-8} więcej</div>`:``}
     </div>`:``})()}
-    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div class="row" style="gap:10px">${t}${n}</div>
-      <button onclick="addEntry()" style="padding:9px 16px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">+ Dodaj zgłoszenie</button>
-    </div>
     ${e||`<p style="color:#475569;text-align:center;padding:48px">Brak zgłoszeń</p>`}`}function Zo(e,t){let n=S.entries.find(t=>t.id===e);n&&(n.status=t,persistAndSync(KEYS.entries,S.entries),render())}function Qo(e,t,n){document.querySelectorAll(`.qs-menu`).forEach(e=>e.remove());let r=[[`sent`,`📤 Wysłano`,`#f59e0b`],[`pending`,`⏳ Oczekuje wyników`,`#8b5cf6`],[`contacted`,`📞 Kontaktowali się`,`#06b6d4`],[`prize_pending`,`📦 Nagroda w drodze`,`#f97316`],[`prize_received`,`✅ Nagroda odebrana`,`#34d399`],[`won`,`🏆 Wygrano`,`#22c55e`],[`lost`,`❌ Przegrano`,`#ef4444`],[`no_response`,`🔕 Brak odpowiedzi`,`#64748b`],[`expired`,`⌛ Termin minął`,`#475569`]],i=document.createElement(`div`);i.className=`qs-menu`,i.style.cssText=`position:fixed;z-index:9999;background:#1e2a3a;border:1px solid #2d3548;border-radius:10px;box-shadow:0 8px 32px #0008;min-width:200px;overflow:hidden`;let a=n.getBoundingClientRect(),o=a.bottom+4,s=Math.min(a.left,window.innerWidth-210);i.style.top=o+`px`,i.style.left=s+`px`,i.innerHTML=r.map(([n,r,i])=>`
     <div onclick="quickStatus('${e}','${n}');document.querySelectorAll('.qs-menu').forEach(m=>m.remove())"
       style="padding:10px 14px;cursor:pointer;font-size:13px;color:${n===t?i:`#94a3b8`};background:${n===t?i+`18`:`transparent`};font-weight:${n===t?700:400};display:flex;align-items:center;gap:8px"
