@@ -109,49 +109,88 @@ function unarchiveContest(id){
 }
 
 function contestCardHtml(c){
+  const ag=S.agencies.find(a=>a.id===c.agencyId);
+  const ce=S.entries.filter(e=>e.contestId===c.id);
+  const d=daysLeft(c.deadline);
+  const isUrgent=d!==null&&d>=0&&d<=2&&c.status==='active';
+  const hasShops=c.shops&&c.shops.length>0;
+  const cid='c_'+c.id.replace(/-/g,'');
 
-    const ag=S.agencies.find(a=>a.id===c.agencyId);
-    const ce=S.entries.filter(e=>e.contestId===c.id);
-    const d=daysLeft(c.deadline);
-    const isUrgent=d!==null&&d>=0&&d<=2&&c.status==='active';
-    const hasShops=c.shops&&c.shops.length>0;
-    return `<div class="card" style="border-color:${isUrgent?'#ef444466':hasShops?'#ef444433':'#2d3548'}">
-      <div class="row" style="justify-content:space-between;align-items:flex-start">
-        <div style="flex:1;min-width:200px">
-          <div class="row" style="gap:8px;margin-bottom:4px;flex-wrap:wrap">
-            <span style="font-weight:700;color:#f1f5f9">${esc(c.name)}</span>
-            ${badge(c.status)}
-            ${isUrgent?'<span style="font-size:12px;color:#ef4444">🔴 PILNE</span>':''}
-          </div>
-          ${c.prize?`<div style="font-size:13px;color:#fbbf24;margin-bottom:3px">🏆 ${esc(c.prize)}${c.prize_value?' · '+esc(c.prize_value):''}</div>`:''}
-          ${c.shops&&c.shops.length?`<div style="background:#ef444411;border:1px solid #ef444433;border-radius:8px;padding:6px 10px;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center">
-            <span style="font-size:12px;color:#ef4444;font-weight:800">⚠️ TYLKO W SKLEPACH:</span>
-            ${c.shops.map(s=>shopBadge(s)).join('')}
-          </div>`:''}
-          ${c.tags&&c.tags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${c.tags.map(t=>tagBadge(t)).join('')}</div>`:''}
-          <div style="font-size:12px;color:#64748b">
-            ${esc(ag?.name||'—')} · zgłoszenia: ${fmt(c.deadline)} · ${deadlineHtml(c.deadline)}
-            ${c.results_date?`<span style="color:#8b5cf6"> · wyniki: ${fmt(c.results_date)} ${resultsDeadlineHtml(c.results_date)}</span>`:''}
-          </div>
-          ${c.conditions?`<div style="font-size:12px;color:#94a3b8;margin-top:4px">📋 ${esc(c.conditions.slice(0,800))}${c.conditions.length>800?'…':''}</div>`:''}
-          ${c.task?`<div style="background:#6366f111;border:1px solid #6366f133;border-radius:6px;padding:6px 10px;margin-top:5px;font-size:12px;color:#818cf8"><strong>🎯 Zadanie:</strong> ${esc(c.task)}</div>`:''}
-          ${c.notes?`<div style="font-size:12px;color:#64748b;margin-top:3px;font-style:italic">💡 ${esc(c.notes.slice(0,800))}${c.notes.length>800?'…':''}</div>`:''}
-          <div style="font-size:12px;color:#475569;margin-top:4px">${ce.length} zgłoszeń${c.status==='ended'&&ce.length>0?(() => {
+  const collapseBtn=(id,txt,content,previewLen=120)=>{
+    if(!content) return '';
+    const short=content.length<=previewLen;
+    return `<div style="margin-top:5px">
+      <span style="font-size:12px;color:#94a3b8">${esc(content.slice(0,previewLen))}${short?'':'…'}</span>
+      ${!short?`<span id="${id}_full" style="display:none;font-size:12px;color:#94a3b8">${esc(content.slice(previewLen))}</span>
+      <button onclick="const f=document.getElementById('${id}_full');const show=f.style.display==='none';f.style.display=show?'inline':'none';this.textContent=show?'▴ zwiń':'▾ więcej'"
+        style="background:none;border:none;color:#475569;font-size:11px;cursor:pointer;padding:0 4px">▾ więcej</button>`:''}
+    </div>`;
+  };
+
+  return `<div class="card" style="border-color:${isUrgent?'#ef444466':hasShops?'#ef444433':'#2d3548'};padding:12px 14px">
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+
+      <div style="flex:1;min-width:0">
+        <!-- Wiersz 1: nazwa + status + pilne -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <span style="font-weight:700;color:#f1f5f9;font-size:14px">${esc(c.name)}</span>
+          ${badge(c.status)}
+          ${isUrgent?'<span style="font-size:11px;color:#ef4444;font-weight:700">🔴 PILNE</span>':''}
+        </div>
+
+        <!-- Wiersz 2: nagroda -->
+        ${c.prize?`<div style="font-size:13px;color:#fbbf24;margin-bottom:6px">🏆 ${esc(c.prize)}${c.prize_value?' · <span style="color:#fb923c">'+esc(c.prize_value)+'</span>':''}</div>`:''}
+
+        <!-- Wiersz 3: meta — agencja · deadline · wyniki -->
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#64748b;margin-bottom:6px">
+          ${ag?`<span style="color:#94a3b8;font-weight:500">${esc(ag.name)}</span><span style="color:#2d3548">·</span>`:''}
+          <span>📅 ${fmt(c.deadline)}</span>
+          ${deadlineHtml(c.deadline)}
+          ${c.results_date?`<span style="color:#2d3548">·</span><span style="color:#8b5cf6">🎯 wyniki: ${fmt(c.results_date)} ${resultsDeadlineHtml(c.results_date)}</span>`:''}
+        </div>
+
+        <!-- Wiersz 4: sklepy (jeśli są) -->
+        ${hasShops?`<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px">
+          <span style="font-size:11px;color:#ef4444;font-weight:700">⚠️ tylko w:</span>
+          ${c.shops.map(s=>shopBadge(s)).join('')}
+        </div>`:''}
+
+        <!-- Wiersz 5: tagi -->
+        ${c.tags&&c.tags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${c.tags.map(t=>tagBadge(t)).join('')}</div>`:''}
+
+        <!-- Zadanie — zawsze widoczne (zwykle krótkie) -->
+        ${c.task?`<div style="background:#6366f111;border:1px solid #6366f133;border-radius:6px;padding:6px 10px;margin-bottom:5px;font-size:12px;color:#818cf8"><strong>🎯</strong> ${esc(c.task)}</div>`:''}
+
+        <!-- Warunki — zwinięte -->
+        ${c.conditions?`<div style="margin-top:4px"><span style="font-size:11px;color:#475569;font-weight:600">📋 Warunki:</span>${collapseBtn(cid+'_cond','',c.conditions,120)}</div>`:''}
+
+        <!-- Notatki — zwinięte -->
+        ${c.notes?`<div style="margin-top:3px"><span style="font-size:11px;color:#475569;font-weight:600">💡 Notatki:</span>${collapseBtn(cid+'_notes','',c.notes,80)}</div>`:''}
+
+        <!-- Stopka: liczba zgłoszeń + limit -->
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">
+          <span style="font-size:12px;color:#475569">${ce.length} zgłoszeń${c.status==='ended'&&ce.length>0?(()=>{
             const w=ce.filter(e=>['won','prize_received','prize_pending'].includes(e.status)).length;
             return w>0?' · <span style="color:#22c55e;font-weight:600">🏆 '+w+' wygranych</span>':' · <span style="color:#ef4444">0 wygranych</span>';
-          })():''}</div>
+          })():''}</span>
           ${c.status==='active'?limitBadgeHtml(c):''}
         </div>
-        <div class="row" style="gap:6px;flex-wrap:wrap;align-self:flex-start;margin-top:4px">
-          ${c.status==='active'?`<button class="btn-sm" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33" onclick="addEntry('${c.id}')">+ Zgłoś</button>`:''}
-          ${c.link?`<button onclick="window.open('${esc(fixUrl(c.link))}','_blank','noopener,noreferrer')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer">🔗 Zgłoś się</button>`:''}
-          ${c.rules_link?`<a href="${esc(fixUrl(c.rules_link))}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#2d3548;color:#94a3b8;border-radius:7px;text-decoration:none;font-size:12px">📄 Regulamin</a>`:''}
+      </div>
+
+      <!-- Przyciski akcji — pionowo po prawej -->
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
+        ${c.status==='active'?`<button class="btn-sm" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33;white-space:nowrap" onclick="addEntry('${c.id}')">+ Zgłoś</button>`:''}
+        ${c.link?`<button onclick="window.open('${esc(fixUrl(c.link))}','_blank','noopener,noreferrer')" style="padding:4px 10px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">🔗 Zgłoś się</button>`:''}
+        ${c.rules_link?`<a href="${esc(fixUrl(c.rules_link))}" target="_blank" style="padding:4px 10px;background:#1e2a3a;color:#64748b;border:1px solid #2d3548;border-radius:7px;text-decoration:none;font-size:12px;white-space:nowrap">📄 Regulamin</a>`:''}
+        <div style="display:flex;gap:5px">
           <button class="btn-sec btn-sm" onclick="editContest('${c.id}')">✏️</button>
           <button class="btn-sm" style="background:#ef444422;color:#f87171;border:1px solid #ef444433" onclick="deleteContest('${c.id}')">🗑</button>
         </div>
       </div>
-    </div>`;
 
+    </div>
+  </div>`;
 }
 
 function renderContests(){
