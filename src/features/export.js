@@ -260,5 +260,116 @@ function exportCalendarICS(){
   a.click(); URL.revokeObjectURL(url);
 }
 
+import * as XLSX from 'xlsx'
+
+function exportPlayersXLSX(){
+  if(!S.players.length){ alert('Brak graczy do eksportu'); return; }
+
+  const STATUS_LABELS = {
+    sent:'Wysłano', pending:'Oczekuje', contacted:'Kontakt',
+    prize_pending:'Nagroda w drodze', prize_received:'Nagroda odebrana',
+    won:'Wygrano', lost:'Przegrano', no_response:'Brak odpowiedzi', expired:'Termin minął'
+  };
+
+  // ── Arkusz 1: Gracze ────────────────────────────────────────────────────────
+  const playersRows = S.players
+    .slice().sort((a,b)=>a.name.localeCompare(b.name,'pl'))
+    .map((p,i)=>{
+      const pe = S.entries.filter(e=>e.playerId===p.id);
+      const won = pe.filter(e=>['won','prize_received','prize_pending'].includes(e.status)).length;
+      const lost = pe.filter(e=>e.status==='lost').length;
+      const wr = pe.length ? Math.round(won/pe.length*100) : 0;
+      return {
+        'Lp.': i+1,
+        'Imię i nazwisko': p.name,
+        'Email': p.email||'',
+        'Telefon': p.phone||'',
+        'Notatki': p.notes||'',
+        'Zgłoszenia': pe.length,
+        'Wygrane': won,
+        'Przegrane': lost,
+        'Win Rate (%)': wr,
+        'Paragony': S.receipts.filter(r=>r.playerId===p.id).length,
+      };
+    });
+
+  // ── Arkusz 2: Profile agencji ────────────────────────────────────────────────
+  const profileRows = [];
+  S.players.slice().sort((a,b)=>a.name.localeCompare(b.name,'pl')).forEach(p=>{
+    S.agencies.forEach(ag=>{
+      const pr = S.profiles.find(x=>x.playerId===p.id&&x.agencyId===ag.id);
+      if(pr){
+        profileRows.push({
+          'Gracz': p.name,
+          'Agencja': ag.name,
+          'Email do agencji': pr.email||'',
+          'Konto bankowe': pr.bank||'',
+          'Adres': pr.address||'',
+          'Notatki': pr.notes||'',
+        });
+      }
+    });
+  });
+
+  // ── Arkusz 3: Historia zgłoszeń ──────────────────────────────────────────────
+  const entriesRows = S.entries
+    .slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))
+    .map(e=>{
+      const p = S.players.find(x=>x.id===e.playerId);
+      const ct = S.contests.find(x=>x.id===e.contestId);
+      const ag = ct ? S.agencies.find(a=>a.id===ct.agencyId) : null;
+      return {
+        'Data': e.date||'',
+        'Gracz': p?.name||'',
+        'Konkurs': ct?.name||'',
+        'Produkty': ct?.products||'',
+        'Agencja': ag?.name||'',
+        'Nagroda': ct?.prize||'',
+        'Wartość nagrody (zł)': ct?.prize_value||'',
+        'Status': STATUS_LABELS[e.status]||e.status,
+        'Odpowiedź': e.answer||'',
+        'Uwagi': e.notes||'',
+      };
+    });
+
+  // ── Arkusz 4: Paragony ───────────────────────────────────────────────────────
+  const receiptsRows = S.receipts
+    .slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))
+    .map(r=>{
+      const p = S.players.find(x=>x.id===r.playerId);
+      return {
+        'Data': r.date||'',
+        'Gracz': p?.name||'',
+        'Sklep': r.shop||'',
+        'Kwota (zł)': r.amount||'',
+        'Ważny do': r.expire_date||'',
+        'Numer': r.number||'',
+        'Status': r.settled ? 'Rozliczony' : 'Aktywny',
+        'Notatki': r.notes||'',
+      };
+    });
+
+  const wb = XLSX.utils.book_new();
+
+  const addSheet=(name, rows, cols)=>{
+    if(!rows.length){ rows=[Object.fromEntries(cols.map(c=>[c,'']))]; }
+    const ws = XLSX.utils.json_to_sheet(rows, {header: cols});
+    // Szerokości kolumn
+    ws['!cols'] = cols.map(c=>({ wch: Math.max(c.length+2, 14) }));
+    XLSX.utils.book_append_sheet(wb, ws, name);
+  };
+
+  addSheet('Gracze', playersRows,
+    ['Lp.','Imię i nazwisko','Email','Telefon','Notatki','Zgłoszenia','Wygrane','Przegrane','Win Rate (%)','Paragony']);
+  addSheet('Profile agencji', profileRows,
+    ['Gracz','Agencja','Email do agencji','Konto bankowe','Adres','Notatki']);
+  addSheet('Historia zgłoszeń', entriesRows,
+    ['Data','Gracz','Konkurs','Produkty','Agencja','Nagroda','Wartość nagrody (zł)','Status','Odpowiedź','Uwagi']);
+  addSheet('Paragony', receiptsRows,
+    ['Data','Gracz','Sklep','Kwota (zł)','Ważny do','Numer','Status','Notatki']);
+
+  XLSX.writeFile(wb, 'KonkursTracker_gracze_'+ktTodayStr()+'.xlsx');
+}
+
 // — eksport na window (onclick= compatibility)
-Object.assign(window, {exportData, importData, exportWonCSV, exportViaEmail, exportToClipboard, handleImportText, handleImportFile, exportCalendarICS});
+Object.assign(window, {exportData, importData, exportWonCSV, exportViaEmail, exportToClipboard, handleImportText, handleImportFile, exportCalendarICS, exportPlayersXLSX});

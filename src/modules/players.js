@@ -124,7 +124,10 @@ function renderPlayers(){
   return `
     <div class="row" style="justify-content:space-between;margin-bottom:20px">
       <h1 style="font-size:22px;font-weight:800;color:#f1f5f9">Gracze</h1>
-      <button class="btn-primary" onclick="addPlayer()">+ Dodaj gracza</button>
+      <div class="row" style="gap:8px">
+        ${S.players.length?`<button class="btn-sec btn-sm" onclick="exportPlayersXLSX()" title="Eksportuj graczy do Excela">📊 Excel</button>`:''}
+        <button class="btn-primary" onclick="addPlayer()">+ Dodaj gracza</button>
+      </div>
     </div>
     ${list||'<p style="color:#475569;text-align:center;padding:48px">Brak graczy — dodaj pierwszego!</p>'}`;
 }
