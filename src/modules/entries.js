@@ -357,33 +357,41 @@ function renderEntries(){
   const playerSel=fsel('ef_player',[['','Wszyscy gracze'],...S.players.map(p=>[p.id,p.name])],entryFilterPlayer);
   const statusSel=fsel('ef_status',[['','Wszystkie statusy'],['sent','Wysłano'],['pending','Oczekuje wyników'],['contacted','Kontaktowali się'],['prize_pending','Nagroda w drodze'],['prize_received','Nagroda odebrana'],['won','Wygrano'],['lost','Przegrano'],['no_response','Brak odpowiedzi'],['expired','Termin minął']],entryFilterStatus);
 
-  // ── Czekam na wyniki — wyróżnione zgłoszenia z nadchodzącą datą wyników ───
+  // ── Czekam na wyniki — zgłoszenia gdzie deadline minął a status wciąż oczekuje ──
   const awaitingResults=(()=>{
     const waiting=S.entries.filter(e=>['sent','pending','contacted'].includes(e.status));
-    const withResultDate=waiting.map(e=>{
+    const items=waiting.map(e=>{
       const c=S.contests.find(x=>x.id===e.contestId);
-      if(!c||!c.results_date) return null;
-      const d=daysLeft(c.results_date);
-      if(d===null||d<0||d>14) return null;
-      return {e,c,d};
-    }).filter(Boolean).sort((a,b)=>a.d-b.d);
-    if(!withResultDate.length) return '';
+      if(!c) return null;
+      const deadlinePassed=c.deadline&&daysLeft(c.deadline)<0;
+      const hasResultDate=!!c.results_date;
+      // Pokaż jeśli: deadline minął LUB ma datę wyników
+      if(!deadlinePassed&&!hasResultDate) return null;
+      const dr=c.results_date?daysLeft(c.results_date):null;
+      return {e,c,dr};
+    }).filter(Boolean).sort((a,b)=>{
+      // Najpierw z datą wyników (rosnąco), potem bez
+      if(a.dr!==null&&b.dr===null) return -1;
+      if(a.dr===null&&b.dr!==null) return 1;
+      if(a.dr!==null&&b.dr!==null) return a.dr-b.dr;
+      return (a.c.deadline||'').localeCompare(b.c.deadline||'');
+    });
+    if(!items.length) return '';
     return `<div style="background:#8b5cf611;border:1px solid #8b5cf633;border-radius:12px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-weight:700;color:#a78bfa;margin-bottom:8px;font-size:13px">🎯 Ogłoszenie wyników w ciągu 14 dni (${withResultDate.length})</div>
-      ${withResultDate.map(({e,c,d})=>{
+      <div style="font-weight:700;color:#a78bfa;margin-bottom:8px;font-size:13px">🎯 Czekam na wyniki <span style="background:#8b5cf633;border-radius:10px;padding:1px 8px;font-size:12px;margin-left:4px">${items.length}</span></div>
+      ${items.slice(0,8).map(({e,c,dr})=>{
         const p=S.players.find(x=>x.id===e.playerId);
-        const col=d<=2?'#ef4444':d<=7?'#f59e0b':'#8b5cf6';
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
-          <div>
-            <div style="font-size:13px;font-weight:600;color:#f1f5f9">${esc(c.name)}</div>
-            <div style="font-size:11px;color:#64748b">${esc(p?.name||'?')} · wyniki: ${c.results_date}</div>
+        const col=dr===null?'#64748b':dr<=2?'#ef4444':dr<=7?'#f59e0b':'#8b5cf6';
+        const drTxt=dr===null?'brak daty wyników':dr===0?'wyniki DZIŚ!':dr<0?'wyniki minęły':'wyniki za '+dr+'d';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</div>
+            <div style="font-size:11px;color:#64748b">${esc(p?.name||'?')} · <span style="color:${col}">${drTxt}</span></div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-weight:700;font-size:13px;color:${col}">${d===0?'DZIŚ!':d+'d'}</span>
-            <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600">${badge(e.status)} ▾</button>
-          </div>
+          <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600;flex-shrink:0">${badge(e.status)} ▾</button>
         </div>`;
       }).join('')}
+      ${items.length>8?`<div style="font-size:12px;color:#64748b;padding-top:6px;text-align:center">...i ${items.length-8} więcej</div>`:''}
     </div>`;
   })();
 
