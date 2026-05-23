@@ -1,0 +1,17 @@
+{
+  "name": "KonkursTracker",
+  "short_name": "KonkursTracker",
+  "description": "Zarządzaj konkursami i zgłoszeniami",
+  "start_url": "/konkurs-tracker/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "icons": [
+    {
+      "src": "/konkurs-tracker/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

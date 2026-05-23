@@ -119,3 +119,22 @@
 - Łącznie 20 skryptów modułowych + 1 inline skrypt inicjalizacyjny
 - Git: pierwsze commitowanie projektu — gałąź `refactor` + `main` (ten sam root commit)
 - GitHub Pages: https://b4stek80-cell.github.io/konkurs-tracker/
+
+## 2026-05-23
+
+### Faza 1 migracji — Vite bundler
+
+- Zainstalowano Vite + npm Supabase (`npm ci`, `npm config set strict-ssl false` obejście cert)
+- Przepisano `src/config.js`: `import { createClient }` z npm, `import.meta.env.VITE_xxx`, eksport przez `Object.assign(window, {...})`
+- Przepisano `src/state.js`: wszystkie `let/const` → `window.xxx` (ES modules mają lokalny scope)
+- Stworzono `src/main.js` jako entry point Vite (importuje wszystkie 18 modułów w kolejności)
+- Przeniesiono inicjalizację `_sb`/`S`/listenerów do `src/init.js`
+- Stworzono `vite.config.js` z `base: '/konkurs-tracker/'` dla GitHub Pages
+- Stworzono `.github/workflows/deploy.yml`: GitHub Actions → `npm ci` → `npm run build` → `peaceiris/actions-gh-pages`
+- Stworzono `.env` z `VITE_SB_URL` / `VITE_SB_KEY` (nie commitowany)
+- `npm run build`: sukces, bundle 381.81 kB / gzip 98.71 kB
+- Bugfix: auto-skrypt regex dopasował deklaracje wewnątrz template literal string (pwa.js) → usunięto `SW_VERSION/CACHE/OFFLINE_URLS` z `Object.assign`
+- Bugfix: SW rejestracja przez blob URL nie działa w Chrome → przeniesiono do `public/sw.js`, rejestracja tylko w `import.meta.env.PROD`
+- Dodano `public/favicon.svg` i `public/manifest.json`
+- Dev server: `localhost:5173/konkurs-tracker/` — działa, Supabase połączony, dane widoczne
+- Konsola: 0 błędów naszego kodu (message channel error = rozszerzenie Chrome)

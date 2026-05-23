@@ -7,7 +7,11 @@ const load = (k, d) => {
 }
 
 // Inicjalizacja Supabase (createClient i klucze dostępne z config.js przez window)
-window._sb = window.createClient(window.SB_URL, window.SB_KEY)
+try {
+  window._sb = window.createClient(window.SB_URL, window.SB_KEY)
+} catch (e) {
+  console.error('[init] Supabase createClient failed:', e)
+}
 
 // Załaduj stan z localStorage
 window.S = {
