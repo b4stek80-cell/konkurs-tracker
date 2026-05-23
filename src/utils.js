@@ -43,3 +43,6 @@ function parseDailyLimit(limitText){
   const m=t.match(/(\d+)\s*(?:zg\w*)?\s*(?:\/|na)?\s*(?:dzie|dzienn)/);
   return m?parseInt(m[1]):null;
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {fixUrl, ktTodayStr, parseDailyLimit, uid, today, daysLeft, fmt, esc, gv, field, finp, ftex, fsel, agencyOpts});

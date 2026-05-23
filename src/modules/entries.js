@@ -464,3 +464,6 @@ function deleteEntry(id){
   if(!isOwner()){ alert('⛔ Tylko właściciel grupy może usuwać zgłoszenia.'); return; }
   confirm('Usunąć zgłoszenie?',()=>{ sbDelete(KEYS.entries,id); S.entries=S.entries.filter(e=>e.id!==id); localStorage.setItem(KEYS.entries,JSON.stringify(S.entries)); render(); });
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {addEntry, findDuplicateCodes, normAnswer, answerSimilarity, findSimilarAnswers, uploadPrizePhoto, showPrizePhotoModal, deletePrizePhoto, previewPrizePhoto, renderEntries, quickStatus, quickStatusMenu, editEntry, deleteEntry});

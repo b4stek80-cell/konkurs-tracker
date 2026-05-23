@@ -39,4 +39,6 @@ function renderNotifStatus(){
   } else {
     el.innerHTML='<button onclick="enableNotifs()" style="background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer">🔔 Włącz powiadomienia</button>';
   }
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {statusColor, badge, renderNotifStatus});

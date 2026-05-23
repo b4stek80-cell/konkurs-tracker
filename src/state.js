@@ -1,50 +1,45 @@
 // ═══════════════════════════════════════════════════════════
-// STATE — globalne zmienne stanu aplikacji
+// STATE — globalne zmienne stanu (eksponowane na window)
+// W ES modules let/const są lokalne — używamy window.xxx
 // ═══════════════════════════════════════════════════════════
 
-// Supabase client (inicjalizowany po załadowaniu SDK)
-let _sb = null;
+window._sb              = null
+window._currentUser     = null
+window._currentFamilyId = null
+window._currentRole     = null
 
-// Auth
-let _currentUser = null;
-let _currentFamilyId = null;
-let _currentRole = null;
+window._syncStatus  = 'ok'
+window._syncPending = {}
+window._deletedIds  = {}
 
-// Sync
-let _syncStatus = 'ok';
-let _syncPending = {};
-let _deletedIds = {};
+window.S = {
+  players: [], agencies: [], profiles: [],
+  contests: [], entries: [], receipts: [], templates: [],
+  tab: 'dashboard', sideOpen: true,
+}
 
-// Główny stan aplikacji
-let S = { players:[], agencies:[], profiles:[], contests:[], entries:[], receipts:[], templates:[], tab:'dashboard' };
+window._modalStack = []
 
-// Modal
-let _modalStack = [];
+window._currentReceiptsPlayerId = null
+window._rcPhotoData     = ''
+window._rcPhotoOriginal = ''
 
-// Paragony
-let _currentReceiptsPlayerId = null;
-let _rcPhotoData = '';
-let _rcPhotoOriginal = '';
+window.contestFilter    = 'active'
+window.contestTagFilter = ''
+window.contestShopFilter = ''
+window.contestSearch    = ''
+window.contestSort      = 'deadline'
 
-// Filtry konkursów
-let contestFilter = 'active';
-let contestTagFilter = '';
-let contestShopFilter = '';
-let contestSearch = '';
-let contestSort = 'deadline';
+window.calMonth = { y: new Date().getFullYear(), m: new Date().getMonth() }
 
-// Kalendarz
-let calMonth = { y: new Date().getFullYear(), m: new Date().getMonth() };
+window._searchTimer     = null
+window.entryFilterPlayer = ''
+window.entryFilterStatus = ''
 
-// Filtry zgłoszeń
-let _searchTimer = null;
-let entryFilterPlayer = '';
-let entryFilterStatus = '';
+window.receiptTabFilter  = 'all'
+window.receiptTabPlayer  = ''
+window.receiptTabAddedBy = ''
 
-// Filtry paragonów
-let receiptTabFilter = 'all';
-let receiptTabPlayer = '';
-let receiptTabAddedBy = '';
+window.deferredPrompt = null
 
-// PWA
-let deferredPrompt = null;
+window.aiState = { step: 'input', error: '', extracted: null, form: {} }

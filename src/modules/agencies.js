@@ -50,3 +50,6 @@ function deleteAgency(id){
   if(!isOwner()){ alert('⛔ Tylko właściciel grupy może usuwać agencje.'); return; }
   confirm('Usunąć agencję?',()=>{ sbDelete(KEYS.agencies,id); S.agencies=S.agencies.filter(a=>a.id!==id); localStorage.setItem(KEYS.agencies,JSON.stringify(S.agencies)); render(); });
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {renderAgencies, agencyForm, addAgency, editAgency, deleteAgency});

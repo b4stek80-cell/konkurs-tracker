@@ -1,0 +1,29 @@
+{
+  "name": "konkurs",
+  "version": "1.0.0",
+  "description": "Aplikacja webowa dla łowców nagród — zarządzanie konkursami, zgłoszeniami, paragonami i graczami w systemie rodzinnym.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/b4stek80-cell/konkurs-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/b4stek80-cell/konkurs-tracker/issues"
+  },
+  "homepage": "https://github.com/b4stek80-cell/konkurs-tracker#readme",
+  "devDependencies": {
+    "vite": "^8.0.14"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.1"
+  }
+}

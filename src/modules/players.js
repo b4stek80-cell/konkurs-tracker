@@ -245,3 +245,6 @@ function openProfileModal(playerId, agencyId){
     persistAndSync(KEYS.profiles,S.profiles); render();
   }});
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {printPlayerSummary, copyField, renderPlayers, photoFieldHtml, previewPhoto, clearPhoto, addPlayer, editPlayer, deletePlayer, openProfileModal});

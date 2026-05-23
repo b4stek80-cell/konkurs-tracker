@@ -60,4 +60,6 @@ function installPWA(){
   if(!deferredPrompt) return;
   deferredPrompt.prompt();
   deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {installPWA, SW_VERSION, CACHE, OFFLINE_URLS});

@@ -5,12 +5,12 @@
 function calShift(delta){
   let m=calMonth.m+delta, y=calMonth.y;
   if(m<0){m=11;y--;} if(m>11){m=0;y++;}
-  calMonth={y,m};
+  window.calMonth={y,m};
   render();
 }
 function calToday(){
   const d=new Date();
-  calMonth={y:d.getFullYear(),m:d.getMonth()};
+  window.calMonth={y:d.getFullYear(),m:d.getMonth()};
   render();
 }
 
@@ -128,4 +128,6 @@ function calDayClick(ds){
     </div>`;
   }).join('');
   openModal({title:'📅 '+ds,html,submitLabel:'Zamknij',onSubmit:()=>true});
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {calShift, calToday, renderCalendar, calDayClick});

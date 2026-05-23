@@ -50,3 +50,6 @@ async function sbDelete(key, id){
   try{ await sbFetch(cfg.table+'?id=eq.'+id+'&family_id=eq.'+_currentFamilyId, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); }
   catch(e){ console.warn('Delete error:', e.message); }
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {sbFetch, sbDelete, SB_TABLES});

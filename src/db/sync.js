@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 
 function setSyncStatus(s){
-  _syncStatus=s;
+  window._syncStatus=s;
   const el=document.getElementById('sync_status');
   if(!el) return;
   const map={idle:['',''],syncing:['🔄','#f59e0b'],ok:['☁️','#22c55e'],error:['⚠️','#ef4444']};
@@ -149,10 +149,10 @@ async function initialSync(){
   if(_currentFamilyId && _currentUser){
     try{
       const mem=await sbFetch('kt_family_members?family_id=eq.'+_currentFamilyId+'&user_id=eq.'+_currentUser.id);
-      _currentRole=(Array.isArray(mem)&&mem[0]?.role)||'member';
+      window._currentRole=(Array.isArray(mem)&&mem[0]?.role)||'member';
 
     }catch(e){
-      _currentRole='member';
+      window._currentRole='member';
 
     }
   }
@@ -207,7 +207,7 @@ let _realtimeChannel = null;
 
 function initRealtime(){
   if(!_sb||!_currentFamilyId) return;
-  if(_realtimeChannel){ try{_sb.removeChannel(_realtimeChannel);}catch(e){} _realtimeChannel=null; }
+  if(_realtimeChannel){ try{_sb.removeChannel(_realtimeChannel);}catch(e){} window._realtimeChannel=null; }
 
   let _rt=null;
   function scheduleRefresh(){
@@ -218,7 +218,7 @@ function initRealtime(){
   const dot=document.getElementById('realtime_dot');
   if(dot){ dot.style.background='#f59e0b'; dot.title='Łączenie...'; }
 
-  _realtimeChannel=_sb.channel('kt_'+_currentFamilyId)
+  window._realtimeChannel=_sb.channel('kt_'+_currentFamilyId)
     .on('postgres_changes',{event:'*',schema:'public',table:'kt_players',  filter:'family_id=eq.'+_currentFamilyId},scheduleRefresh)
     .on('postgres_changes',{event:'*',schema:'public',table:'kt_agencies', filter:'family_id=eq.'+_currentFamilyId},scheduleRefresh)
     .on('postgres_changes',{event:'*',schema:'public',table:'kt_contests', filter:'family_id=eq.'+_currentFamilyId},scheduleRefresh)
@@ -275,3 +275,6 @@ function autoBackup(){
     console.warn('Auto-backup failed:', e.message);
   }
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {setSyncStatus, isOwner, validateReceiptDate, validateExpireDate, persistAndSync, syncToSupabase, syncToSupabaseRaw, syncFromSupabase, initialSync, manualRefresh, initRealtime, autoBackup, _realtimeChannel});

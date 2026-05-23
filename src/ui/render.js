@@ -372,8 +372,8 @@ function render(){
 function bindEntryFilters(){
   const ep=document.getElementById('ef_player');
   const es=document.getElementById('ef_status');
-  if(ep) ep.addEventListener('change',e=>{entryFilterPlayer=e.target.value;render();});
-  if(es) es.addEventListener('change',e=>{entryFilterStatus=e.target.value;render();});
+  if(ep) ep.addEventListener('change',e=>{window.entryFilterPlayer=e.target.value;render();});
+  if(es) es.addEventListener('change',e=>{window.entryFilterStatus=e.target.value;render();});
 }
 
 function renderTemplates(){
@@ -458,4 +458,6 @@ function showBackupModal(){
     </div>`,
     submitLabel:'Zamknij', onSubmit:()=>true
   });
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {renderNav, setTab, closeSidebar, renderDashboard, renderStats, render, bindEntryFilters, renderTemplates, showBackupModal});

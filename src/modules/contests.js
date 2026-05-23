@@ -204,7 +204,7 @@ function renderContests(){
       <input type="text" id="contest_search_inp" value="${esc(contestSearch)}" placeholder="🔍 Szukaj — nazwa, agencja, nagroda..."
         oninput="contestSearchDebounced(this.value)"
         style="background:#131929;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:10px 36px 10px 14px;width:100%;font-size:14px;outline:none;box-sizing:border-box">
-      ${contestSearch?'<button onclick="contestSearch=\'\';render()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#64748b;cursor:pointer;font-size:16px">✕</button>':''}
+      ${contestSearch?'<button onclick="window.contestSearch=\'\';render()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#64748b;cursor:pointer;font-size:16px">✕</button>':''}
     </div>
     <div class="filter-tabs" style="margin-bottom:8px">${filters.map(([v,l])=>`
       <button class="${contestFilter===v?'active':''}" onclick="setContestFilter('${v}')">${l} (${v==='all'?S.contests.length:S.contests.filter(c=>c.status===v).length})</button>`).join('')}
@@ -228,13 +228,13 @@ function renderContests(){
     <div id="contests_list">${contestSearch&&!filtered.length?'<p style="color:#475569;text-align:center;padding:48px">Brak wyników dla: <strong>'+esc(contestSearch)+'</strong></p>':(list||'<p style="color:#475569;text-align:center;padding:48px">Brak konkursów w tej kategorii</p>')}`;
 }
 
-function setContestFilter(f){ contestFilter=f; render(); }
+function setContestFilter(f){ window.contestFilter=f; render(); }
 
 // Debounce dla wyszukiwarki - nie rerenderuje przy każdej literce
 function contestSearchDebounced(val){
-  contestSearch=val;
+  window.contestSearch=val;
   clearTimeout(_searchTimer);
-  _searchTimer=setTimeout(()=>{
+  window._searchTimer=setTimeout(()=>{
     // Zapisz pozycję kursora
     const inp=document.getElementById('contest_search_inp');
     const pos=inp?inp.selectionStart:0;
@@ -281,9 +281,9 @@ function renderContestList(){
   const inp=document.getElementById('contest_search_inp');
   if(inp){ const l=inp.value.length; inp.focus(); inp.setSelectionRange(l,l); }
 }
-function setContestTag(t){ contestTagFilter=t; render(); }
-function setContestShop(s){ contestShopFilter=s; render(); }
-function setContestSort(s){ contestSort=s; render(); }
+function setContestTag(t){ window.contestTagFilter=t; render(); }
+function setContestShop(s){ window.contestShopFilter=s; render(); }
+function setContestSort(s){ window.contestSort=s; render(); }
 
 function contestForm(c={}){
   return `
@@ -333,3 +333,6 @@ function deleteContest(id){
   if(!isOwner()){ alert('⛔ Tylko właściciel grupy może usuwać konkursy.'); return; }
   confirm('Usunąć konkurs?',()=>{ sbDelete(KEYS.contests,id); S.contests=S.contests.filter(c=>c.id!==id); localStorage.setItem(KEYS.contests,JSON.stringify(S.contests)); render(); });
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {resultsDeadlineHtml, deadlineHtml, tagBadge, tagsFieldHtml, toggleTag, getSelectedTags, shopBadge, shopsFieldHtml, getSelectedShops, entriesToday, limitBadgeHtml, archiveContest, unarchiveContest, contestCardHtml, renderContests, setContestFilter, contestSearchDebounced, renderContestList, setContestTag, setContestShop, setContestSort, contestForm, addContest, editContest, deleteContest});

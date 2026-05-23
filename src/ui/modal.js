@@ -40,7 +40,7 @@ function openModal({title, html, wide, onSubmit, submitLabel, onClose, id: custo
 
 function closeModal(id){
   const el=document.getElementById(id);
-  if(el){ const s=_modalStack.find(m=>m.id===id); if(s?.onClose)s.onClose(); el.remove(); _modalStack=_modalStack.filter(m=>m.id!==id); }
+  if(el){ const s=_modalStack.find(m=>m.id===id); if(s?.onClose)s.onClose(); el.remove(); window._modalStack=_modalStack.filter(m=>m.id!==id); }
 }
 
 function confirm(msg, onYes){
@@ -64,4 +64,6 @@ function showConfirm(msg, onYes, onNo){
     onSubmit:()=>{ if(onYes) onYes(); return true; },
     onClose:()=>{ if(onNo) onNo(); }
   });
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {openModal, closeModal, confirm, showConfirm});

@@ -216,4 +216,6 @@ async function handleImportFile(inp){
   };
   reader.onerror=()=>alert('❌ Nie można odczytać pliku');
   reader.readAsText(file);
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {exportData, importData, exportWonCSV, exportViaEmail, exportToClipboard, handleImportText, handleImportFile});

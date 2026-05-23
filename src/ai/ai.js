@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // AI IMPORT
 // ═══════════════════════════════════════════════════════════
-let aiState={step:'input',error:'',extracted:null,form:{}};
+aiState={step:'input',error:'',extracted:null,form:{}};
 
 async function fetchPageText(url){
   const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
@@ -778,3 +778,6 @@ function promptForApiKey(){
   });
 }
 
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {fetchPageText, parseGeminiJSON, extractFieldsFallback, analyzeWithGemini, analyzeWithGeminiVision, renderAI, aiTab, pdfLoad, fillAIForm, runAI, saveAIContest, generateForContest, copyAiResult, generateCustom, promptForApiKey, GEMINI_PROMPT, _aiTab, _pdfBase64});

@@ -10,28 +10,9 @@
   <meta name="apple-mobile-web-app-title" content="KonkursTracker">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="src/config.js"></script>
-  <script src="src/state.js"></script>
-  <script src="src/utils.js"></script>
-  <script src="src/db/supabase.js"></script>
-  <script src="src/db/sync.js"></script>
-  <script src="src/auth/auth.js"></script>
-  <script src="src/modules/agencies.js"></script>
-  <script src="src/modules/players.js"></script>
-  <script src="src/modules/receipts.js"></script>
-  <script src="src/modules/contests.js"></script>
-  <script src="src/modules/entries.js"></script>
-  <script src="src/ai/ai.js"></script>
-  <script src="src/ui/modal.js"></script>
-  <script src="src/ui/components.js"></script>
-  <script src="src/ui/calendar.js"></script>
-  <script src="src/ui/render.js"></script>
-  <script src="src/features/notifications.js"></script>
-  <script src="src/features/export.js"></script>
-  <script src="src/features/pwa.js"></script>
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="style.css">
+  <script type="module" src="/src/main.js"></script>
 </head>
 <body>
   <div id="lock-screen">
@@ -140,42 +121,5 @@
 <!-- MODAL CONTAINER -->
 <div id="modal-root"></div>
 
-<script>
-// ── Inicjalizacja ────────────────────────────────────────────────────────────
-const load = (k,d) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d} };
-
-_sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
-
-S = {
-  players:  load(KEYS.players,[]),
-  agencies: load(KEYS.agencies,[]),
-  profiles: load(KEYS.profiles,[]),
-  contests: load(KEYS.contests,[]),
-  entries:  load(KEYS.entries,[]),
-  receipts: load(KEYS.receipts,[]),
-  templates: load(KEYS.templates,[]),
-  tab: 'dashboard',
-  sideOpen: window.innerWidth > 768,
-};
-
-document.getElementById('menu-btn').addEventListener('click',()=>{
-  S.sideOpen=!S.sideOpen; renderNav();
-});
-
-// Wyczyść stare base64 zdjęć z localStorage (oszczędność miejsca)
-try {
-  const receiptsRaw = localStorage.getItem('kk_receipts');
-  if(receiptsRaw){
-    const rr = JSON.parse(receiptsRaw);
-    localStorage.setItem('kk_receipts', JSON.stringify(
-      rr.map(r=>({...r, photo_local:'', photo: r.photo?.startsWith('http')?r.photo:''}))
-    ));
-  }
-} catch(e){}
-
-document.addEventListener('DOMContentLoaded', initAuth);
-setTimeout(autoBackup, 3000);
-setTimeout(()=>{ renderNotifStatus(); checkNotifications(); }, 1000);
-</script>
 </body>
 </html>

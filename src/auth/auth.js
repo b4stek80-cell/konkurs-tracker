@@ -53,14 +53,14 @@ async function handleLogin(){
   btn.textContent='Logowanie...'; btn.disabled=true;
   try{
     await authSignIn(email,pass);
-    _currentUser=(await _sb.auth.getUser()).data.user;
-    _currentFamilyId=await getMyFamily();
+    window._currentUser=(await _sb.auth.getUser()).data.user;
+    window._currentFamilyId=await getMyFamily();
     if(!_currentFamilyId){ showFamilySetup(); return; }
     // Pobierz rolę usera w rodzinie
     try{
       const mem=await sbFetch('kt_family_members?family_id=eq.'+_currentFamilyId+'&user_id=eq.'+_currentUser.id);
-      _currentRole=(Array.isArray(mem)&&mem[0]?.role)||'member';
-    }catch(e){ _currentRole='member'; }
+      window._currentRole=(Array.isArray(mem)&&mem[0]?.role)||'member';
+    }catch(e){ window._currentRole='member'; }
     document.getElementById('lock-screen').classList.add('hidden');
     sessionStorage.setItem('kt_auth','1');
     await initialSync();
@@ -86,10 +86,10 @@ async function handleRegister(){
     await authSignUp(email,pass);
     // Zaloguj od razu
     await authSignIn(email,pass);
-    _currentUser=(await _sb.auth.getUser()).data.user;
+    window._currentUser=(await _sb.auth.getUser()).data.user;
     // Jeśli ma kod zaproszenia - dołącz do rodziny
     if(invite){
-      _currentFamilyId=await joinFamily(invite);
+      window._currentFamilyId=await joinFamily(invite);
       document.getElementById('lock-screen').classList.add('hidden');
       sessionStorage.setItem('kt_auth','1');
       await initialSync();
@@ -128,7 +128,7 @@ async function handleCreateFamily(){
   const name=document.getElementById('fam_name').value.trim()||'Moja rodzina';
   const err=document.getElementById('fam_err');
   try{
-    _currentFamilyId=await createFamily(name);
+    window._currentFamilyId=await createFamily(name);
     document.getElementById('lock-screen').classList.add('hidden');
     sessionStorage.setItem('kt_auth','1');
     await initialSync();
@@ -143,8 +143,8 @@ async function handleJoinFamily(){
   const err=document.getElementById('fam_err');
   if(!code){err.textContent='Wpisz kod zaproszenia';return;}
   try{
-    _currentFamilyId=await joinFamily(code);
-    _currentRole=null; // wymusza ponowne pobranie roli w initialSync
+    window._currentFamilyId=await joinFamily(code);
+    window._currentRole=null; // wymusza ponowne pobranie roli w initialSync
     document.getElementById('lock-screen').classList.add('hidden');
     sessionStorage.setItem('kt_auth','1');
     await initialSync();
@@ -174,9 +174,9 @@ async function authSignUp(email, password){
 
 async function authSignOut(){
   if(_sb) await _sb.auth.signOut();
-  _currentUser=null;
-  _currentFamilyId=null;
-  _currentRole=null;
+  window._currentUser=null;
+  window._currentFamilyId=null;
+  window._currentRole=null;
   S.players=[]; S.agencies=[]; S.profiles=[];
   S.contests=[]; S.entries=[]; S.receipts=[];
   sessionStorage.removeItem('kt_auth');
@@ -288,3 +288,6 @@ if(_sb){
     }
   });
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {showInviteModal, generateAndShowCode, showAuthScreen, showFamilySetup, handleLogin, handleRegister, handleSolo, handleCreateFamily, handleJoinFamily, authSignIn, authSignUp, authSignOut, getMyFamily, createFamily, joinFamily, generateInviteCode, initAuth});

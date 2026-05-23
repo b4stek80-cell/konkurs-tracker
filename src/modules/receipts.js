@@ -13,7 +13,7 @@ function openReceiptsModal(playerId){
   if(playerId==='null'||playerId===''||playerId===undefined) playerId=null;
   const p=S.players.find(x=>x.id===playerId);
   const recs=S.receipts.filter(r=>r.playerId===playerId);
-  _currentReceiptsPlayerId=playerId;
+  window._currentReceiptsPlayerId=playerId;
 
   const listHtml=recs.length===0
     ? '<p style="color:#475569;text-align:center;padding:20px 0">Brak paragonów — dodaj pierwszy</p>'
@@ -191,7 +191,7 @@ async function saveReceipt(playerId){
   if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent='Zapisuję...'; }
   try {
     const photoData=_rcPhotoData||document.getElementById('rc_photo_data')?.value||'';
-    _rcPhotoData='';
+    window._rcPhotoData='';
     const receiptNr=gv('rc_receipt_nr')||'';
     // Walidacja daty zakupu
     const _rcDate = gv('rc_date');
@@ -608,7 +608,7 @@ function renderReceiptsTab(){
       <button onclick="addReceiptGlobal()" class="btn-primary btn-sm">+ Dodaj paragon</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-      ${statusFilters.map(([v,l])=>`<button class="${receiptTabFilter===v?'active':''}" onclick="receiptTabFilter='${v}';render()" style="padding:5px 12px;border-radius:8px;border:1px solid ${receiptTabFilter===v?'#6366f1':'#2d3548'};background:${receiptTabFilter===v?'#6366f122':'transparent'};color:${receiptTabFilter===v?'#818cf8':'#64748b'};font-size:12px;cursor:pointer">${l} (${
+      ${statusFilters.map(([v,l])=>`<button class="${receiptTabFilter===v?'active':''}" onclick="window.receiptTabFilter='${v}';render()" style="padding:5px 12px;border-radius:8px;border:1px solid ${receiptTabFilter===v?'#6366f1':'#2d3548'};background:${receiptTabFilter===v?'#6366f122':'transparent'};color:${receiptTabFilter===v?'#818cf8':'#64748b'};font-size:12px;cursor:pointer">${l} (${
         v==='all'?S.receipts.length:
         v==='free'?S.receipts.filter(r=>!r.settled&&S.entries.filter(e=>e.receiptId===r.id).length===0).length:
         v==='used'?S.receipts.filter(r=>S.entries.filter(e=>e.receiptId===r.id).length>0&&!r.settled).length:
@@ -617,11 +617,11 @@ function renderReceiptsTab(){
       })</button>`).join('')}
     </div>
     <div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap">
-      <select onchange="receiptTabPlayer=this.value;render()" style="flex:1;min-width:140px;background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 10px;font-size:13px">
+      <select onchange="window.receiptTabPlayer=this.value;render()" style="flex:1;min-width:140px;background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 10px;font-size:13px">
         <option value="">Wszyscy gracze</option>
         ${S.players.map(p=>`<option value="${p.id}" ${receiptTabPlayer===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}
       </select>
-      <select onchange="receiptTabAddedBy=this.value;render()" style="flex:1;min-width:140px;background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 10px;font-size:13px">
+      <select onchange="window.receiptTabAddedBy=this.value;render()" style="flex:1;min-width:140px;background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 10px;font-size:13px">
         <option value="">Wszyscy dodający</option>
         ${[...new Set(S.receipts.map(r=>r.added_by).filter(Boolean))].map(u=>`<option value="${u}" ${receiptTabAddedBy===u?'selected':''}>${esc(u.split('@')[0])}</option>`).join('')}
       </select>
@@ -709,3 +709,6 @@ function assignReceiptToEntry(receiptId){
     }
   });
 }
+
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {receiptStatus, openReceiptsModal, addReceiptForm, previewReceiptPhoto, compressImage, uploadReceiptPhoto, deleteReceiptPhoto, ocrReceipt, runReceiptOCR, saveReceipt, refreshReceiptList, receiptRowHtml, dedupeReceipts, editReceipt, erRunOCR, deleteReceipt, settleReceipt, unsettleReceipt, showReceiptPhoto, renderReceiptsTab, renderTab, deleteReceiptGlobal, addReceiptGlobal, assignReceiptToPlayer, assignReceiptToEntry});

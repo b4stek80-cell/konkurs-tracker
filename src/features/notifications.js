@@ -52,4 +52,6 @@ async function enableNotifs(){
   const ok=await requestNotifPermission();
   if(ok){ checkNotifications(); }
   renderNotifStatus();
-}
+}
+// — eksport na window (onclick= compatibility)
+Object.assign(window, {requestNotifPermission, sendNotif, checkNotifications, enableNotifs});
