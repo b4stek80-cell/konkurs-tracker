@@ -138,3 +138,33 @@
 - Dodano `public/favicon.svg` i `public/manifest.json`
 - Dev server: `localhost:5173/konkurs-tracker/` — działa, Supabase połączony, dane widoczne
 - Konsola: 0 błędów naszego kodu (message channel error = rozszerzenie Chrome)
+
+## 2026-05-23
+
+### Nowe funkcje + redesign + motywy + responsywność
+
+**Nowe funkcje:**
+- **Eksport kalendarza ICS** (`src/features/export.js`): generuje `.ics` z wszystkimi aktywnymi konkursami jako wydarzeniami kalendarza + VALARM 1 dzień przed terminem
+- **Wykres aktywności** (`src/ui/render.js`): SVG bar chart ostatnich 6 miesięcy (zgłoszenia + wygrane) w sekcji Statystyki
+- **Dopasowanie paragonów → konkursów** (`src/modules/receipts.js`): po OCR paragonu automatycznie szuka aktywnych konkursów z pasującą nazwą sklepu, wyświetla panel sugestii z przyciskiem „Przypisz"
+- **Sekcja „Czekam na wyniki"** (`src/modules/entries.js`): fioletowa sekcja poniżej filtrów w zakładce Zgłoszenia — pokazuje zgłoszenia, których konkurs minął lub ma wyznaczoną datę ogłoszenia wyników
+- **Pole „Produkty konkursowe"** (`src/modules/contests.js`, `src/ai/ai.js`): nowe pole `products` w formularzu konkursu, wyświetlane w nawiasie przy nazwie; AI (`Gemini`) automatycznie wypełnia je podczas analizy strony/zdjęcia
+
+**Redesign kart konkursów:**
+- Zwijane warunki (pierwsze 120 znaków widoczne, reszta za „▾ więcej")
+- Zwijane notatki (pierwsze 80 znaków)
+- Produkty w nawiasie przy nazwie konkursu
+- Pionowy układ przycisków akcji
+
+**System motywów (jasny/ciemny):**
+- `style.css`: wszystkie kolory zastąpione zmiennymi CSS (`var(--bg)`, `var(--text)` itp.)
+- `:root` = ciemny motyw (domyślny), `[data-theme="light"]` = jasny motyw
+- Przycisk przełączania w stopce sidebaru (`#theme-toggle`)
+- `src/init.js`: motyw wczytywany z `localStorage` (`kk_theme`) i stosowany przed renderem
+- `window.toggleTheme()`: przełącza motyw, zapisuje do localStorage, aktualizuje ikonę/napis
+
+**Responsywność:**
+- Tablet (769–1100px): sidebar 180px, mniejsze paddingi
+- Desktop duży (>1400px): sidebar 220px, content max-width 1100px, większe paddingi
+- Mobile (≤768px): sidebar jako fixed overlay z hamburger menu, mniejsze karty i stat-cards
+- Bardzo mały telefon (≤380px): stat-grid 3 kolumny

@@ -43,8 +43,34 @@ document.getElementById('menu-btn').addEventListener('click', () => {
   window.renderNav()
 })
 
+// Motyw — wczytaj i zastosuj przed renderem
+;(()=>{
+  const saved = localStorage.getItem('kk_theme') || 'dark'
+  if(saved === 'light') document.documentElement.setAttribute('data-theme','light')
+})()
+
+window.toggleTheme = function(){
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light'
+  const next = isLight ? 'dark' : 'light'
+  document.documentElement.setAttribute('data-theme', next)
+  localStorage.setItem('kk_theme', next)
+  const icon  = document.getElementById('theme-icon')
+  const label = document.getElementById('theme-label')
+  if(icon)  icon.textContent  = next === 'light' ? '🌙' : '☀️'
+  if(label) label.textContent = next === 'light' ? 'Ciemny motyw' : 'Jasny motyw'
+}
+
+function _applyThemeBtn(){
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light'
+  const icon  = document.getElementById('theme-icon')
+  const label = document.getElementById('theme-label')
+  if(icon)  icon.textContent  = isLight ? '🌙' : '☀️'
+  if(label) label.textContent = isLight ? 'Ciemny motyw' : 'Jasny motyw'
+}
+
 // Start aplikacji po załadowaniu DOM
 document.addEventListener('DOMContentLoaded', () => {
+  _applyThemeBtn()
   window.initAuth()
   setTimeout(window.autoBackup, 3000)
   setTimeout(() => { window.renderNotifStatus(); window.checkNotifications(); window.syncContestsToSW(); }, 1000)
