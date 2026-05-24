@@ -38,8 +38,8 @@ function addEntry(contestId){
   const playerOpts=[['','— wybierz gracza —'],...S.players.map(p=>[p.id,p.name])];
 
   const mid=openModal({title:`Zgłoś do: ${c.name}`,html:`
-    <div style="background:#0a0e1a;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#94a3b8">
-      Agencja: <strong style="color:#f1f5f9">${esc(ag?.name||'—')}</strong>
+    <div style="background:var(--bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--text-2)">
+      Agencja: <strong style="color:var(--text)">${esc(ag?.name||'—')}</strong>
     </div>
     ${field('Gracz',fsel('e_player',playerOpts,''))}
     <div id="profile_field">${field('Profil danych',fsel('e_profile',[['','— wybierz gracza —']]))}</div>
@@ -51,14 +51,14 @@ function addEntry(contestId){
       <textarea id="e_answer" style="min-height:90px;border-color:#6366f133" placeholder="Wpisz swoją odpowiedź/hasło konkursowe..."></textarea>
       <div style="display:flex;justify-content:space-between;margin-top:4px">
         <span id="e_dup_warn" style="font-size:11px;color:#f59e0b"></span>
-        <span id="e_answer_count" style="font-size:11px;color:#475569">0 znaków</span>
+        <span id="e_answer_count" style="font-size:11px;color:var(--text-4)">0 znaków</span>
       </div>
     </div>
     <div id="e_history_box"></div>
     <div class="field"><label>🔑 Kody konkursowe (opcjonalnie)</label>
       <textarea id="e_codes" style="min-height:60px;border-color:#2d3548;font-family:monospace;font-size:13px" placeholder="Wpisz użyte kody, jeden w każdej linii&#10;np. VBG4FK2&#10;ABC123"></textarea>
       <div id="e_codes_warn" style="font-size:11px;color:#ef4444;margin-top:4px"></div>
-      <div style="font-size:11px;color:#475569;margin-top:2px">Aplikacja ostrzeże jeśli kod był już użyty w tym konkursie</div>
+      <div style="font-size:11px;color:var(--text-4);margin-top:2px">Aplikacja ostrzeże jeśli kod był już użyty w tym konkursie</div>
     </div>
     ${field('Notatki',ftex('e_notes',''))}`,
     submitLabel:'Zapisz',onSubmit:()=>{
@@ -91,7 +91,7 @@ function addEntry(contestId){
           const p=S.players.find(x=>x.id===alreadyUsed.playerId);
           openModal({title:'⚠️ Paragon już użyty',
             html:`<p style="color:#cbd5e1">Ten paragon jest już przypisany do zgłoszenia w tym konkursie.<br><br>
-            <span style="color:#64748b;font-size:12px">Gracz: ${esc(p?.name||'?')} · Data: ${fmt(alreadyUsed.date)}</span></p>
+            <span style="color:var(--text-3);font-size:12px">Gracz: ${esc(p?.name||'?')} · Data: ${fmt(alreadyUsed.date)}</span></p>
             <p style="color:#f59e0b;font-size:12px;margin-top:8px">Regulaminy zazwyczaj zabraniają używania tego samego paragonu do wielu zgłoszeń.</p>`,
             submitLabel:'Zamknij', onSubmit:()=>true
           });
@@ -147,10 +147,10 @@ function addEntry(contestId){
         }
       });
       if(agAnswers.length){
-        histBox.innerHTML='<div style="background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
-          '<div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">📚 Twoje wcześniejsze odpowiedzi dla tej agencji ('+agAnswers.length+')</div>'+
+        histBox.innerHTML='<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
+          '<div style="font-size:11px;color:var(--text-3);font-weight:600;margin-bottom:6px">📚 Twoje wcześniejsze odpowiedzi dla tej agencji ('+agAnswers.length+')</div>'+
           agAnswers.slice(0,5).map(a=>
-            '<div style="font-size:11px;color:#94a3b8;padding:5px 0;border-top:1px solid #1e2a3a">'+
+            '<div style="font-size:11px;color:var(--text-2);padding:5px 0;border-top:1px solid #1e2a3a">'+
             '<span style="color:#6366f1">'+esc(a.contest.name)+':</span> '+
             esc(a.entry.answer.slice(0,100))+(a.entry.answer.length>100?'…':'')+'</div>'
           ).join('')+
@@ -264,7 +264,7 @@ function showPrizePhotoModal(entryId){
       ${previewHtml}
       <div class="field"><label>Dodaj/zmień zdjęcie nagrody</label>
         <div onclick="document.getElementById('prize_file_inp').click()"
-          style="border:2px dashed #2d3548;border-radius:10px;padding:20px;text-align:center;cursor:pointer;color:#64748b;font-size:13px">
+          style="border:2px dashed #2d3548;border-radius:10px;padding:20px;text-align:center;cursor:pointer;color:var(--text-3);font-size:13px">
           📷 Kliknij aby wybrać zdjęcie
         </div>
         <input type="file" id="prize_file_inp" accept="image/*" style="display:none"
@@ -335,11 +335,11 @@ function renderEntries(){
     return `<div class="card" style="border-radius:10px">
       <div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
         <div>
-          <div style="font-weight:600;color:#f1f5f9;font-size:14px">${esc(c?.name||'?')}</div>
-          <div style="font-size:12px;color:#94a3b8">${esc(p?.name||'?')} · ${esc(ag?.name||'?')} · ${fmt(e.date)}</div>
-          ${pr?`<div style="font-size:11px;color:#475569">📧 ${esc(pr.email)}</div>`:''}
-          ${e.notes?`<div style="font-size:12px;color:#64748b;font-style:italic">${esc(e.notes)}</div>`:''}
-          ${(()=>{ const rc=e.receiptId?S.receipts.find(x=>x.id===e.receiptId):null; return rc?`<div style="display:flex;align-items:center;gap:5px;margin-top:2px">${rc.photo?`<img src="${rc.photo}" style="width:22px;height:22px;border-radius:3px;object-fit:cover">`:'🧾'}<span style="font-size:11px;color:#475569">${esc(rc.shop||'Paragon')}${rc.receipt_nr?' · nr '+esc(rc.receipt_nr):''}</span></div>`:''; })()}
+          <div style="font-weight:600;color:var(--text);font-size:14px">${esc(c?.name||'?')}</div>
+          <div style="font-size:12px;color:var(--text-2)">${esc(p?.name||'?')} · ${esc(ag?.name||'?')} · ${fmt(e.date)}</div>
+          ${pr?`<div style="font-size:11px;color:var(--text-4)">📧 ${esc(pr.email)}</div>`:''}
+          ${e.notes?`<div style="font-size:12px;color:var(--text-3);font-style:italic">${esc(e.notes)}</div>`:''}
+          ${(()=>{ const rc=e.receiptId?S.receipts.find(x=>x.id===e.receiptId):null; return rc?`<div style="display:flex;align-items:center;gap:5px;margin-top:2px">${rc.photo?`<img src="${rc.photo}" style="width:22px;height:22px;border-radius:3px;object-fit:cover">`:'🧾'}<span style="font-size:11px;color:var(--text-4)">${esc(rc.shop||'Paragon')}${rc.receipt_nr?' · nr '+esc(rc.receipt_nr):''}</span></div>`:''; })()}
         </div>
         <div class="row" style="gap:6px;flex-wrap:wrap">
           <button onclick="quickStatusMenu('${e.id}','${e.status}',this)"
@@ -385,24 +385,24 @@ function renderEntries(){
         const drTxt=dr===null?'brak daty wyników':dr===0?'wyniki DZIŚ!':dr<0?'wyniki minęły':'wyniki za '+dr+'d';
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</div>
-            <div style="font-size:11px;color:#64748b">${esc(p?.name||'?')} · <span style="color:${col}">${drTxt}</span></div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</div>
+            <div style="font-size:11px;color:var(--text-3)">${esc(p?.name||'?')} · <span style="color:${col}">${drTxt}</span></div>
           </div>
           <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600;flex-shrink:0">${badge(e.status)} ▾</button>
         </div>`;
       }).join('')}
-      ${items.length>8?`<div style="font-size:12px;color:#64748b;padding-top:6px;text-align:center">...i ${items.length-8} więcej</div>`:''}
+      ${items.length>8?`<div style="font-size:12px;color:var(--text-3);padding-top:6px;text-align:center">...i ${items.length-8} więcej</div>`:''}
     </div>`;
   })();
 
   return `
-    <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:16px">Zgłoszenia</h1>
+    <h1 style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:16px">Zgłoszenia</h1>
     <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="row" style="gap:10px">${playerSel}${statusSel}</div>
       <button onclick="addEntry()" style="padding:9px 16px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">+ Dodaj zgłoszenie</button>
     </div>
     ${awaitingResults}
-    ${list||'<p style="color:#475569;text-align:center;padding:48px">Brak zgłoszeń</p>'}`;
+    ${list||'<p style="color:var(--text-4);text-align:center;padding:48px">Brak zgłoszeń</p>'}`;
 }
 
 
@@ -431,7 +431,7 @@ function quickStatusMenu(entryId, currentStatus, btnEl){
   ];
   const menu=document.createElement('div');
   menu.className='qs-menu';
-  menu.style.cssText='position:fixed;z-index:9999;background:#1e2a3a;border:1px solid #2d3548;border-radius:10px;box-shadow:0 8px 32px #0008;min-width:200px;overflow:hidden';
+  menu.style.cssText='position:fixed;z-index:9999;background:var(--bg-hover);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px #0008;min-width:200px;overflow:hidden';
   // Pozycja
   const rect=btnEl.getBoundingClientRect();
   const top=rect.bottom+4;

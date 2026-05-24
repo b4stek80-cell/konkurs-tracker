@@ -252,20 +252,20 @@ async function analyzeWithGeminiVision(apiKey, pdfBase64){
 function renderAI(){
   const savedKey=localStorage.getItem(KEYS.geminiKey)||'';
   return `
-    <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:6px">🤖 Dodaj konkurs z AI</h1>
-    <div style="background:#0a0e1a;border:1px solid #1a73e833;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#94a3b8;line-height:1.7">
+    <h1 style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px">🤖 Dodaj konkurs z AI</h1>
+    <div style="background:var(--bg);border:1px solid #1a73e833;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--text-2);line-height:1.7">
       <strong style="color:#60a5fa">Jak to działa:</strong> podaj źródło regulaminu → Gemini AI wypełni formularz automatycznie.<br>
-      <span style="color:#475569">Klucz API pobierz za darmo na <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#60a5fa">aistudio.google.com</a> · Flash-Lite 2.5 = 1000 req/dzień za darmo</span>
+      <span style="color:var(--text-4)">Klucz API pobierz za darmo na <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#60a5fa">aistudio.google.com</a> · Flash-Lite 2.5 = 1000 req/dzień za darmo</span>
     </div>
     <div class="field"><label>Klucz API Google Gemini</label>
       <input type="password" id="ai_key" value="${esc(savedKey)}" placeholder="AIzaSy..." oninput="localStorage.setItem('${KEYS.geminiKey}',this.value)">
     </div>
 
     <!-- Zakładki źródła -->
-    <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid #2d3548;border-radius:10px;overflow:hidden">
+    <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:10px;overflow:hidden">
       <button id="aitab_url" onclick="aiTab('url')" style="flex:1;padding:10px 6px;font-size:13px;font-weight:600;border:none;border-radius:0;background:#6366f1;color:#fff;cursor:pointer">🔗 URL</button>
-      <button id="aitab_pdf" onclick="aiTab('pdf')" style="flex:1;padding:10px 6px;font-size:13px;font-weight:600;border:none;border-left:1px solid #2d3548;border-radius:0;background:#1e2a3a;color:#64748b;cursor:pointer">📄 PDF</button>
-      <button id="aitab_txt" onclick="aiTab('txt')" style="flex:1;padding:10px 6px;font-size:13px;font-weight:600;border:none;border-left:1px solid #2d3548;border-radius:0;background:#1e2a3a;color:#64748b;cursor:pointer">📋 Tekst</button>
+      <button id="aitab_pdf" onclick="aiTab('pdf')" style="flex:1;padding:10px 6px;font-size:13px;font-weight:600;border:none;border-left:1px solid #2d3548;border-radius:0;background:var(--bg-hover);color:var(--text-3);cursor:pointer">📄 PDF</button>
+      <button id="aitab_txt" onclick="aiTab('txt')" style="flex:1;padding:10px 6px;font-size:13px;font-weight:600;border:none;border-left:1px solid #2d3548;border-radius:0;background:var(--bg-hover);color:var(--text-3);cursor:pointer">📋 Tekst</button>
     </div>
 
     <!-- Panel URL -->
@@ -285,8 +285,8 @@ function renderAI(){
           ondrop="event.preventDefault();this.style.borderColor='#2d3548';pdfLoad(event.dataTransfer.files[0])"
           style="border:2px dashed #2d3548;border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s">
           <div style="font-size:36px;margin-bottom:8px">📄</div>
-          <div style="color:#94a3b8;font-size:14px;font-weight:600">Kliknij lub przeciągnij plik PDF</div>
-          <div style="color:#475569;font-size:12px;margin-top:4px">Regulamin w formacie .pdf</div>
+          <div style="color:var(--text-2);font-size:14px;font-weight:600">Kliknij lub przeciągnij plik PDF</div>
+          <div style="color:var(--text-4);font-size:12px;margin-top:4px">Regulamin w formacie .pdf</div>
         </div>
         <input type="file" id="ai_pdf_inp" accept=".pdf" style="display:none" onchange="pdfLoad(this.files[0])">
         <div id="pdf_info" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px"></div>
@@ -306,8 +306,8 @@ function renderAI(){
     </div>
     <div id="ai_loading" style="display:none;text-align:center;padding:40px">
       <div style="font-size:36px;margin-bottom:12px">🤖</div>
-      <div style="color:#f1f5f9;font-weight:700;margin-bottom:6px">Gemini analizuje regulamin…</div>
-      <div style="color:#64748b;font-size:13px;margin-bottom:16px">Pobieranie strony i ekstrakcja danych</div>
+      <div style="color:var(--text);font-weight:700;margin-bottom:6px">Gemini analizuje regulamin…</div>
+      <div style="color:var(--text-3);font-size:13px;margin-bottom:16px">Pobieranie strony i ekstrakcja danych</div>
       <div><span class="pulse-dot" style="animation-delay:0s"></span> <span class="pulse-dot" style="animation-delay:.2s"></span> <span class="pulse-dot" style="animation-delay:.4s"></span></div>
     </div>
     <div id="ai_form" style="display:none;margin-top:20px">
@@ -322,7 +322,7 @@ function renderAI(){
           <option value="-new-">+ Nowa agencja</option>
         </select>
         <input id="af_agency_new" style="display:none;margin-top:8px" placeholder="Nazwa nowej agencji">
-        <div id="af_agency_hint" style="font-size:11px;color:#475569;margin-top:4px"></div>
+        <div id="af_agency_hint" style="font-size:11px;color:var(--text-4);margin-top:4px"></div>
       </div>
       <div class="field"><label>Nagroda</label><input id="af_prize" placeholder="np. 10 000 zł"></div>
       <div class="field"><label>Produkty konkursowe</label><input id="af_products" placeholder="np. Pepsi, Lay's (pojawi się w nawiasie przy nazwie)"></div>
@@ -671,14 +671,14 @@ async function generateForContest(contestId){
             results.map((t,i)=>{
               const label=t.title||t.label||('Wersja '+(i+1));
               const text=t.content||t.text||'';
-              return '<div style="background:#131929;border:1px solid #2d3548;border-radius:10px;padding:12px;margin-bottom:8px">'+
+              return '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">'+
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
-                '<span style="font-weight:700;color:#f1f5f9;font-size:13px">'+esc(label)+'</span>'+
+                '<span style="font-weight:700;color:var(--text);font-size:13px">'+esc(label)+'</span>'+
                 '<div style="display:flex;gap:6px">'+
                 '<button onclick="copyAiResult('+i+',this)" style="padding:4px 12px;font-size:12px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:6px;cursor:pointer;font-weight:600" id="copygen_'+i+'">📋 Kopiuj</button>'+
                 '</div></div>'+
                 '<div style="font-size:13px;color:#cbd5e1;line-height:1.6;white-space:pre-wrap">'+esc(text)+'</div>'+
-                '<div style="font-size:11px;color:#475569;margin-top:4px">'+text.length+' znaków</div>'+
+                '<div style="font-size:11px;color:var(--text-4);margin-top:4px">'+text.length+' znaków</div>'+
                 '</div>';
             }).join('');
           if(btn){btn.textContent='🔄 Generuj ponownie';btn.disabled=false;}
@@ -754,12 +754,12 @@ async function generateCustom(){
             results.map((t,i)=>{
               const lbl=t.title||t.label||('Wersja '+(i+1));
               const txt=t.content||t.text||'';
-              return '<div style="background:#131929;border:1px solid #2d3548;border-radius:10px;padding:12px;margin-bottom:8px">'+
+              return '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">'+
               '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
-              '<span style="font-weight:700;color:#f1f5f9;font-size:13px">'+esc(lbl)+'</span>'+
+              '<span style="font-weight:700;color:var(--text);font-size:13px">'+esc(lbl)+'</span>'+
               '<button onclick="copyAiResult('+i+',this)" style="padding:4px 12px;font-size:12px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:6px;cursor:pointer">📋 Kopiuj</button>'+
               '</div><div style="font-size:13px;color:#cbd5e1;line-height:1.6;white-space:pre-wrap">'+esc(txt)+'</div>'+
-              '<div style="font-size:11px;color:#475569;margin-top:4px">'+txt.length+' znaków</div></div>';
+              '<div style="font-size:11px;color:var(--text-4);margin-top:4px">'+txt.length+' znaków</div></div>';
             }).join('');
           if(btn){btn.textContent='🔄 Ponownie';btn.disabled=false;}
         }
@@ -774,7 +774,7 @@ async function generateCustom(){
 
 function promptForApiKey(){
   openModal({title:'Klucz Gemini API',html:`
-    <p style="color:#94a3b8;font-size:13px;margin-bottom:12px">Pobierz bezpłatnie na <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#60a5fa">aistudio.google.com</a> — 1000 req/dzień za darmo.</p>
+    <p style="color:var(--text-2);font-size:13px;margin-bottom:12px">Pobierz bezpłatnie na <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#60a5fa">aistudio.google.com</a> — 1000 req/dzień za darmo.</p>
     ${field('Klucz API',finp('tmpl_api_key','','password','AIzaSy...'))}`,
     submitLabel:'Zapisz',onSubmit:()=>{
       const k=gv('tmpl_api_key').trim();if(!k)return false;

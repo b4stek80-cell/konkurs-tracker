@@ -79,16 +79,16 @@ function renderDashboard(){
 
   // ── Sekcja "Do wysłania" — kompaktowa lista
   const todoHtml = notSubmitted.length===0
-    ? '<div style="color:#475569;font-size:13px;padding:8px 0">Wszystkie aktywne konkursy mają zgłoszenia 🎉</div>'
+    ? '<div style="color:var(--text-4);font-size:13px;padding:8px 0">Wszystkie aktywne konkursy mają zgłoszenia 🎉</div>'
     : notSubmitted.slice(0,5).map(ct=>{
         const d=daysLeft(ct.deadline);
         const ag=S.agencies.find(a=>a.id===ct.agencyId);
         const col=d<=1?'#ef4444':d<=3?'#f59e0b':'#94a3b8';
-        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e2a3a">
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-sub)">
           <div style="flex-shrink:0;width:36px;height:36px;background:${col}18;border:1px solid ${col}44;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:${col}">${d===0?'Dziś':d+'d'}</div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ct.name)}</div>
-            <div style="font-size:11px;color:#64748b">${esc(ag?.name?.split(' ')[0]||'—')}${ct.prize?' · '+esc(ct.prize.slice(0,25))+(ct.prize.length>25?'…':''):''}</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ct.name)}</div>
+            <div style="font-size:11px;color:var(--text-3)">${esc(ag?.name?.split(' ')[0]||'—')}${ct.prize?' · '+esc(ct.prize.slice(0,25))+(ct.prize.length>25?'…':''):''}</div>
             ${ct.shops&&ct.shops.length?`<div style="font-size:10px;color:#ef4444;font-weight:700">⚠️ ${ct.shops.slice(0,2).join(', ')}</div>`:''}
             ${limitBadgeHtml(ct)}
           </div>
@@ -102,20 +102,20 @@ function renderDashboard(){
 
   // ── Sekcja "Oczekuję wyników"
   const waitHtml = waitingContests.length===0
-    ? '<div style="color:#475569;font-size:13px;padding:8px 0">Brak oczekujących zgłoszeń</div>'
+    ? '<div style="color:var(--text-4);font-size:13px;padding:8px 0">Brak oczekujących zgłoszeń</div>'
     : waitingContests.slice(0,6).map(({entry:e,contest:ct})=>{
         const ag=S.agencies.find(a=>a.id===ct.agencyId);
         const p=S.players.find(x=>x.id===e.playerId);
-        return `<div style="padding:9px 0;border-bottom:1px solid #1e2a3a">
-          <div style="font-weight:600;color:#f1f5f9;font-size:13px;margin-bottom:3px">${esc(ct.name)}</div>
-          <div style="font-size:11px;color:#64748b;margin-bottom:4px">${esc(p?.name||'?')} · ${esc(ag?.name||'—')}</div>
+        return `<div style="padding:9px 0;border-bottom:1px solid var(--border-sub)">
+          <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:3px">${esc(ct.name)}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:4px">${esc(p?.name||'?')} · ${esc(ag?.name||'—')}</div>
           <div style="display:flex;align-items:center;gap:8px">
             <button onclick="quickStatusMenu('${e.id}','${e.status}',this)" style="padding:2px 8px;font-size:11px;border-radius:6px;cursor:pointer;border:1px solid ${statusColor(e.status)}44;background:${statusColor(e.status)}18;color:${statusColor(e.status)};font-weight:600">${badge(e.status)} ▾</button>
-            <span style="font-size:11px;color:#475569">${fmt(e.date)}</span>
+            <span style="font-size:11px;color:var(--text-4)">${fmt(e.date)}</span>
           </div>
         </div>`;
       }).join('')
-    + (waitingContests.length>6?`<div style="font-size:12px;color:#475569;padding:8px 0">...i ${waitingContests.length-6} więcej</div>`:'');
+    + (waitingContests.length>6?`<div style="font-size:12px;color:var(--text-4);padding:8px 0">...i ${waitingContests.length-6} więcej</div>`:'');
 
   // ── Sekcja "Pilne terminy"
   const critHtml = critical.length===0 ? '' :
@@ -129,8 +129,8 @@ function renderDashboard(){
         const hasEntry=S.entries.some(e=>e.contestId===c.id);
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
           <div>
-            <span style="font-weight:600;color:#f1f5f9;font-size:13px">${esc(c.name)}</span>
-            <span style="font-size:11px;color:#64748b"> · ${esc(ag?.name||'—')}</span>
+            <span style="font-weight:600;color:var(--text);font-size:13px">${esc(c.name)}</span>
+            <span style="font-size:11px;color:var(--text-3)"> · ${esc(ag?.name||'—')}</span>
             ${c.shops&&c.shops.length?`<div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:2px">${c.shops.map(s=>shopBadge(s)).join('')}</div>`:''}
           </div>
           <div style="display:flex;gap:6px;align-items:center">
@@ -159,14 +159,14 @@ function renderDashboard(){
         const myEntries=S.entries.filter(e=>e.contestId===ct.id&&['sent','pending','contacted'].includes(e.status));
         return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2d3548;gap:8px;flex-wrap:wrap">
           <div>
-            <span style="font-weight:600;color:#f1f5f9;font-size:13px">${esc(ct.name)}</span>
-            <span style="font-size:11px;color:#64748b"> · ${fmt(ct.results_date)}</span>
+            <span style="font-weight:600;color:var(--text);font-size:13px">${esc(ct.name)}</span>
+            <span style="font-size:11px;color:var(--text-3)"> · ${fmt(ct.results_date)}</span>
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <span style="color:#8b5cf6;font-weight:700;font-size:13px">${d===0?'DZIŚ!':d+'d'}</span>
             ${myEntries.length>0
-              ? `<span style="font-size:11px;color:#94a3b8">${myEntries.length} zgł.</span>`
-              : '<span style="font-size:11px;color:#475569">brak zgłoszenia</span>'
+              ? `<span style="font-size:11px;color:var(--text-2)">${myEntries.length} zgł.</span>`
+              : '<span style="font-size:11px;color:var(--text-4)">brak zgłoszenia</span>'
             }
           </div>
         </div>`;
@@ -175,8 +175,8 @@ function renderDashboard(){
 
   return `
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;flex-wrap:wrap;gap:6px">
-      <h1 style="font-size:24px;font-weight:800;color:#f1f5f9;margin:0">Dashboard</h1>
-      <span style="font-size:12px;color:#475569">${new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'})}</span>
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);margin:0">Dashboard</h1>
+      <span style="font-size:12px;color:var(--text-4)">${new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'})}</span>
     </div>
 
     <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
@@ -194,16 +194,16 @@ function renderDashboard(){
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:12px">
       <div class="card" style="padding:14px">
-        <div style="font-weight:700;color:#f1f5f9;margin-bottom:6px;font-size:14px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;display:flex;justify-content:space-between;align-items:center">
           <span>📋 Do wysłania <span style="background:#6366f133;color:#818cf8;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">${notSubmitted.length}</span></span>
-          <button onclick="setTab('contests')" style="background:none;border:none;color:#475569;font-size:11px;cursor:pointer">Wszystkie →</button>
+          <button onclick="setTab('contests')" style="background:none;border:none;color:var(--text-4);font-size:11px;cursor:pointer">Wszystkie →</button>
         </div>
         ${todoHtml}
       </div>
       <div class="card" style="padding:14px">
-        <div style="font-weight:700;color:#f1f5f9;margin-bottom:6px;font-size:14px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;display:flex;justify-content:space-between;align-items:center">
           <span>⏳ Oczekuję <span style="background:#f59e0b33;color:#fbbf24;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">${waitingContests.length}</span></span>
-          <button onclick="setTab('entries')" style="background:none;border:none;color:#475569;font-size:11px;cursor:pointer">Wszystkie →</button>
+          <button onclick="setTab('entries')" style="background:none;border:none;color:var(--text-4);font-size:11px;cursor:pointer">Wszystkie →</button>
         </div>
         ${waitHtml}
       </div>
@@ -223,16 +223,16 @@ function renderStats(){
   const wr=total>0?((won/total)*100).toFixed(1):0;
 
   const bar=(label,val,color)=>`<div class="bar-wrap">
-    <div class="bar-row"><span style="color:#94a3b8">${label}</span><span style="color:${color};font-weight:700">${val}</span></div>
+    <div class="bar-row"><span style="color:var(--text-2)">${label}</span><span style="color:${color};font-weight:700">${val}</span></div>
     <div class="bar-track"><div class="bar-fill" style="width:${total>0?(val/total)*100:0}%;background:${color}"></div></div>
   </div>`;
 
   const playerRows=S.players.map(p=>{
     const pe=S.entries.filter(e=>e.playerId===p.id);
-    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e2a3a;flex-wrap:wrap;gap:6px">
-      <span style="font-weight:600;color:#f1f5f9;font-size:14px">${esc(p.name)}</span>
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-sub);flex-wrap:wrap;gap:6px">
+      <span style="font-weight:600;color:var(--text);font-size:14px">${esc(p.name)}</span>
       <div class="row" style="gap:12px;font-size:13px">
-        <span style="color:#64748b">${pe.length} zgł.</span>
+        <span style="color:var(--text-3)">${pe.length} zgł.</span>
         <span style="color:#22c55e">✓ ${pe.filter(e=>e.status==='won').length}</span>
         <span style="color:#ef4444">✗ ${pe.filter(e=>e.status==='lost').length}</span>
         <span style="color:#f59e0b">~ ${pe.filter(e=>e.status==='sent'||e.status==='pending').length}</span>
@@ -265,7 +265,7 @@ function renderStats(){
   }).filter(s=>s.entries>0).sort((a,b)=>(b.wr||-1)-(a.wr||-1));
 
   const wrBadge=(wr)=>{
-    if(wr===null) return '<span style="color:#475569;font-size:12px">brak rozstrzygnięć</span>';
+    if(wr===null) return '<span style="color:var(--text-4);font-size:12px">brak rozstrzygnięć</span>';
     const col=wr>=50?'#22c55e':wr>=25?'#f59e0b':'#ef4444';
     return '<span style="background:'+col+'22;color:'+col+';border:1px solid '+col+'44;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700">'+wr+'%</span>';
   };
@@ -299,8 +299,8 @@ function renderStats(){
         ${m.w?`<text x="${x+w/2}%" y="${H-hW-3}" text-anchor="middle" fill="#4ade80" font-size="9">+${m.w}</text>`:''}`;
     }).join('');
     return `<div class="card" style="margin-bottom:16px">
-      <div style="font-weight:700;color:#f1f5f9;margin-bottom:10px;font-size:14px">📈 Aktywność — ostatnie 6 miesięcy</div>
-      <div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:#94a3b8">
+      <div style="font-weight:700;color:var(--text);margin-bottom:10px;font-size:14px">📈 Aktywność — ostatnie 6 miesięcy</div>
+      <div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:var(--text-2)">
         <span><span style="display:inline-block;width:10px;height:10px;background:#6366f133;border:1px solid #6366f155;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Zgłoszenia</span>
         <span><span style="display:inline-block;width:10px;height:10px;background:#22c55e55;border:1px solid #22c55e77;border-radius:2px;margin-right:4px;vertical-align:middle"></span>Wygrane</span>
       </div>
@@ -309,7 +309,7 @@ function renderStats(){
   })();
 
   return `
-    <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:20px">📊 Statystyki</h1>
+    <h1 style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:20px">📊 Statystyki</h1>
     <div class="stat-grid">
       ${[['Zgłoszeń',total,'#f1f5f9'],['Wygranych',won,'#22c55e'],['Przegranych',lost,'#ef4444'],['Oczekuje',sent+pending,'#f59e0b'],['Win Rate',wr+'%','#818cf8']].map(([l,v,c])=>`
         <div class="stat-card"><div class="val" style="color:${c}">${v}</div><div class="lbl">${l}</div></div>`).join('')}
@@ -318,14 +318,14 @@ function renderStats(){
     ${monthlyChart}
 
     ${bestAgency||worstAgency?`<div class="card" style="margin-bottom:16px">
-      <div style="font-weight:700;color:#f1f5f9;margin-bottom:12px;font-size:14px">💡 Podpowiedzi</div>
+      <div style="font-weight:700;color:var(--text);margin-bottom:12px;font-size:14px">💡 Podpowiedzi</div>
       ${bestAgency&&bestAgency.wr>0?`<div style="font-size:13px;color:#86efac;margin-bottom:6px">✓ Najlepiej Ci idzie u <strong>${esc(bestAgency.agency.name.split(' ').slice(0,3).join(' '))}</strong> — ${bestAgency.wr}% skuteczności (${bestAgency.won}/${bestAgency.decided})</div>`:''}
       ${worstAgency&&bestAgency&&worstAgency!==bestAgency&&worstAgency.wr===0?`<div style="font-size:13px;color:#fca5a5">✗ Brak wygranych u <strong>${esc(worstAgency.agency.name.split(' ').slice(0,3).join(' '))}</strong> — rozważ inny typ konkursów</div>`:''}
       ${tagStats[0]&&tagStats[0].wr>0?`<div style="font-size:13px;color:#93c5fd;margin-top:6px">🎯 Najskuteczniejszy typ: <strong>${tagStats[0].label}</strong> (${tagStats[0].wr}%)</div>`:''}
     </div>`:''}
 
     ${total>0?`<div class="card" style="margin-bottom:16px">
-      <div style="font-weight:700;color:#f1f5f9;margin-bottom:14px;font-size:14px">Podział zgłoszeń</div>
+      <div style="font-weight:700;color:var(--text);margin-bottom:14px;font-size:14px">Podział zgłoszeń</div>
       ${bar('Wysłane',sent,'#f59e0b')}
   ${bar('Oczekuje wyników',pending,'#8b5cf6')}
   ${bar('Kontaktowali się',contacted,'#06b6d4')}
@@ -337,30 +337,30 @@ function renderStats(){
     </div>`:''}
 
     ${agencyStats.length?`<div class="card" style="margin-bottom:16px">
-      <div style="font-weight:700;color:#f1f5f9;margin-bottom:14px;font-size:14px">🏢 Skuteczność per agencja</div>
-      ${agencyStats.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1e2a3a;gap:8px">
+      <div style="font-weight:700;color:var(--text);margin-bottom:14px;font-size:14px">🏢 Skuteczność per agencja</div>
+      ${agencyStats.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border-sub);gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;color:#f1f5f9;font-weight:600">${esc(s.agency.name.split(' ').slice(0,3).join(' '))}</div>
-          <div style="font-size:11px;color:#64748b">${s.entries} zgłoszeń · ${s.won} wygranych</div>
+          <div style="font-size:13px;color:var(--text);font-weight:600">${esc(s.agency.name.split(' ').slice(0,3).join(' '))}</div>
+          <div style="font-size:11px;color:var(--text-3)">${s.entries} zgłoszeń · ${s.won} wygranych</div>
         </div>
         ${wrBadge(s.wr)}
       </div>`).join('')}
     </div>`:''}
 
     ${tagStats.length?`<div class="card" style="margin-bottom:16px">
-      <div style="font-weight:700;color:#f1f5f9;margin-bottom:14px;font-size:14px">🏷️ Skuteczność per typ konkursu</div>
-      ${tagStats.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1e2a3a;gap:8px">
+      <div style="font-weight:700;color:var(--text);margin-bottom:14px;font-size:14px">🏷️ Skuteczność per typ konkursu</div>
+      ${tagStats.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border-sub);gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;color:#f1f5f9;font-weight:600">${s.label}</div>
-          <div style="font-size:11px;color:#64748b">${s.entries} zgłoszeń · ${s.won} wygranych</div>
+          <div style="font-size:13px;color:var(--text);font-weight:600">${s.label}</div>
+          <div style="font-size:11px;color:var(--text-3)">${s.entries} zgłoszeń · ${s.won} wygranych</div>
         </div>
         ${wrBadge(s.wr)}
       </div>`).join('')}
     </div>`:''}
 
     <div class="card">
-      <div style="font-weight:700;color:#f1f5f9;margin-bottom:14px;font-size:14px">👤 Wyniki per gracz</div>
-      ${playerRows||'<div style="color:#475569;font-size:13px">Brak graczy</div>'}
+      <div style="font-weight:700;color:var(--text);margin-bottom:14px;font-size:14px">👤 Wyniki per gracz</div>
+      ${playerRows||'<div style="color:var(--text-4);font-size:13px">Brak graczy</div>'}
     </div>
 
     ${(()=>{
@@ -371,11 +371,11 @@ function renderStats(){
         const p=S.players.find(x=>x.id===e.playerId);
         return `<div style="text-align:center;cursor:pointer" onclick="showPrizePhotoModal('${e.id}')">
           <img src="${e.prize_photo}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:2px solid #22c55e44">
-          <div style="font-size:10px;color:#64748b;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ct?.name?.slice(0,20)||'?')}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ct?.name?.slice(0,20)||'?')}</div>
           <div style="font-size:10px;color:#818cf8">${esc(p?.name?.split(' ')[0]||'?')}</div>
         </div>`;
       }).join('');
-      return '<div class="card"><div style="font-weight:700;color:#f1f5f9;margin-bottom:12px;font-size:14px">🏆 Galeria nagród ('+prizeEntries.length+')</div>'+
+      return '<div class="card"><div style="font-weight:700;color:var(--text);margin-bottom:12px;font-size:14px">🏆 Galeria nagród ('+prizeEntries.length+')</div>'+
         '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px">'+galleryItems+'</div></div>';
     })()}`;
 }
@@ -417,29 +417,29 @@ function renderTemplates(){
   const apiKey=localStorage.getItem(KEYS.geminiKey)||'';
 
   const contestCards = active.length===0
-    ? '<p style="color:#475569;text-align:center;padding:32px 0">Brak aktywnych konkursów — dodaj konkursy najpierw</p>'
+    ? '<p style="color:var(--text-4);text-align:center;padding:32px 0">Brak aktywnych konkursów — dodaj konkursy najpierw</p>'
     : active.map(ct=>{
         const ag=S.agencies.find(a=>a.id===ct.agencyId);
         const d=daysLeft(ct.deadline);
         const col=d!==null&&d<=3?'#ef4444':d!==null&&d<=7?'#f59e0b':'#64748b';
-        return `<div style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;padding:14px;margin-bottom:8px">
+        return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
             <div style="flex:1">
-              <div style="font-weight:700;color:#f1f5f9;font-size:14px">${esc(ct.name)}</div>
-              <div style="font-size:11px;color:#64748b">${esc(ag?.name||'—')}${d!==null?` · <span style="color:${col};font-weight:600">${d}d</span>`:''}${ct.prize?` · ${esc(ct.prize)}`:''}</div>
+              <div style="font-weight:700;color:var(--text);font-size:14px">${esc(ct.name)}</div>
+              <div style="font-size:11px;color:var(--text-3)">${esc(ag?.name||'—')}${d!==null?` · <span style="color:${col};font-weight:600">${d}d</span>`:''}${ct.prize?` · ${esc(ct.prize)}`:''}</div>
             </div>
             <button onclick="generateForContest('${ct.id}')" class="btn-gemini btn-sm" style="flex-shrink:0">✨ Generuj</button>
           </div>
           ${ct.task
             ? `<div style="background:#6366f111;border:1px solid #6366f133;border-radius:6px;padding:7px 10px;font-size:12px;color:#818cf8"><strong>🎯 Zadanie:</strong> ${esc(ct.task)}</div>`
-            : `<div style="color:#475569;font-size:12px;font-style:italic">Brak zadania konkursowego — dodaj je edytując konkurs</div>`
+            : `<div style="color:var(--text-4);font-size:12px;font-style:italic">Brak zadania konkursowego — dodaj je edytując konkurs</div>`
           }
         </div>`;
       }).join('');
 
   return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin:0">✨ Generuj odpowiedź AI</h1>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text);margin:0">✨ Generuj odpowiedź AI</h1>
       <button onclick="generateCustom()" class="btn-gemini btn-sm">✨ Własny temat</button>
     </div>
 
@@ -447,13 +447,13 @@ function renderTemplates(){
       ⚠️ Brak klucza Gemini API — <button onclick="promptForApiKey()" style="background:none;border:none;color:#f59e0b;cursor:pointer;font-weight:700;font-size:13px;text-decoration:underline">kliknij aby dodać</button>
     </div>`:''}
 
-    <div style="background:#131929;border:1px solid #1e2a3a;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#475569;line-height:1.6">
+    <div style="background:var(--bg-card);border:1px solid #1e2a3a;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text-4);line-height:1.6">
       💡 Wybierz konkurs i kliknij <strong style="color:#818cf8">✨ Generuj</strong> — AI napisze 3 różne odpowiedzi pod zadanie konkursowe. Tekst brzmi naturalnie, po ludzku.
     </div>
 
     <div id="ai_gen_result"></div>
 
-    <div style="font-weight:700;color:#f1f5f9;margin-bottom:10px;font-size:14px">🏆 Aktywne konkursy (${active.length})</div>
+    <div style="font-weight:700;color:var(--text);margin-bottom:10px;font-size:14px">🏆 Aktywne konkursy (${active.length})</div>
     ${contestCards}`;
 }
 
@@ -466,7 +466,7 @@ function showBackupModal(){
 
       <div style="background:#22c55e11;border:1px solid #22c55e33;border-radius:10px;padding:14px">
         <div style="font-size:14px;font-weight:700;color:#4ade80;margin-bottom:6px">⬇️ Eksportuj backup</div>
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">Wyślij dane na email lub skopiuj do schowka</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Wyślij dane na email lub skopiuj do schowka</div>
         <button onclick="exportViaEmail()" style="width:100%;padding:10px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">
           📧 Wyślij na email
         </button>
@@ -477,14 +477,14 @@ function showBackupModal(){
 
       <div style="background:#f59e0b11;border:1px solid #f59e0b33;border-radius:10px;padding:14px">
         <div style="font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:6px">📊 Eksport wygranych (CSV)</div>
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">Lista wygranych do arkusza kalkulacyjnego (Excel, Sheets)</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Lista wygranych do arkusza kalkulacyjnego (Excel, Sheets)</div>
         <button onclick="exportWonCSV()" style="width:100%;padding:10px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
           📊 Pobierz CSV wygranych
         </button>
       </div>
       <div style="background:#06b6d411;border:1px solid #06b6d433;border-radius:10px;padding:14px">
         <div style="font-size:14px;font-weight:700;color:#22d3ee;margin-bottom:6px">📅 Eksport do kalendarza (ICS)</div>
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">Zaimportuj deadliny konkursów do Google Calendar, Apple Calendar lub Outlook. Każdy konkurs = wydarzenie z przypomnieniem dzień wcześniej.</div>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Zaimportuj deadliny konkursów do Google Calendar, Apple Calendar lub Outlook. Każdy konkurs = wydarzenie z przypomnieniem dzień wcześniej.</div>
         <button onclick="exportCalendarICS()" style="width:100%;padding:10px;background:#06b6d4;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
           📅 Pobierz plik .ics
         </button>
@@ -492,8 +492,8 @@ function showBackupModal(){
 
       <div style="background:#6366f111;border:1px solid #6366f133;border-radius:10px;padding:14px">
         <div style="font-size:14px;font-weight:700;color:#818cf8;margin-bottom:6px">⬆️ Importuj (wklej ze schowka)</div>
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">Wklej wcześniej skopiowany JSON poniżej i kliknij Importuj</div>
-        <textarea id="import_json_text" style="width:100%;min-height:80px;font-size:11px;font-family:monospace;box-sizing:border-box;background:#0a0e1a;color:#f1f5f9;border:1px solid #2d3548;border-radius:8px;padding:8px" placeholder="Wklej tutaj skopiowany JSON..."></textarea>
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Wklej wcześniej skopiowany JSON poniżej i kliknij Importuj</div>
+        <textarea id="import_json_text" style="width:100%;min-height:80px;font-size:11px;font-family:monospace;box-sizing:border-box;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px" placeholder="Wklej tutaj skopiowany JSON..."></textarea>
         <button onclick="handleImportText()" style="width:100%;margin-top:8px;padding:10px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">
           ⬆️ Importuj wklejony JSON
         </button>

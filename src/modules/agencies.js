@@ -7,10 +7,10 @@ function renderAgencies(){
     <div class="card">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div>
-          <div style="font-weight:700;color:#f1f5f9;font-size:16px">${esc(a.name)}</div>
+          <div style="font-weight:700;color:var(--text);font-size:16px">${esc(a.name)}</div>
           ${a.website?`<a href="${esc(fixUrl(a.website))}" target="_blank" style="font-size:13px;color:#6366f1;text-decoration:none">${esc(a.website)}</a>`:''}
-          <div style="font-size:12px;color:#475569;margin-top:4px">${S.profiles.filter(p=>p.agencyId===a.id).length} profili · ${S.contests.filter(c=>c.agencyId===a.id).length} konkursów</div>
-          ${a.notes?`<div style="font-size:12px;color:#94a3b8;margin-top:2px">${esc(a.notes)}</div>`:''}
+          <div style="font-size:12px;color:var(--text-4);margin-top:4px">${S.profiles.filter(p=>p.agencyId===a.id).length} profili · ${S.contests.filter(c=>c.agencyId===a.id).length} konkursów</div>
+          ${a.notes?`<div style="font-size:12px;color:var(--text-2);margin-top:2px">${esc(a.notes)}</div>`:''}
         </div>
         <div class="row" style="gap:6px">
           <button class="btn-sec btn-sm" onclick="editAgency('${a.id}')">✏️</button>
@@ -20,10 +20,10 @@ function renderAgencies(){
     </div>`).join('');
   return `
     <div class="row" style="justify-content:space-between;margin-bottom:20px">
-      <h1 style="font-size:22px;font-weight:800;color:#f1f5f9">Agencje</h1>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text)">Agencje</h1>
       <button class="btn-primary" onclick="addAgency()">+ Dodaj agencję</button>
     </div>
-    ${list||'<p style="color:#475569;text-align:center;padding:48px">Brak agencji</p>'}`;
+    ${list||'<p style="color:var(--text-4);text-align:center;padding:48px">Brak agencji</p>'}`;
 }
 
 function agencyForm(a={}){

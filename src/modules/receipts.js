@@ -16,15 +16,15 @@ function openReceiptsModal(playerId){
   window._currentReceiptsPlayerId=playerId;
 
   const listHtml=recs.length===0
-    ? '<p style="color:#475569;text-align:center;padding:20px 0">Brak paragonów — dodaj pierwszy</p>'
+    ? '<p style="color:var(--text-4);text-align:center;padding:20px 0">Brak paragonów — dodaj pierwszy</p>'
     : recs.map(r=>receiptRowHtml(r)).join('');
 
   const html=`
     <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
       <button class="btn-primary btn-sm" onclick="addReceiptForm('${playerId}')">+ Dodaj paragon</button>
     </div>
-    <div id="receipt_add_form" style="display:none;background:#0a0e1a;border:1px solid #6366f133;border-radius:10px;padding:14px;margin-bottom:14px">
-      <div style="font-weight:600;color:#f1f5f9;font-size:14px;margin-bottom:10px">Nowy paragon</div>
+    <div id="receipt_add_form" style="display:none;background:var(--bg);border:1px solid #6366f133;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-weight:600;color:var(--text);font-size:14px;margin-bottom:10px">Nowy paragon</div>
       <div class="grid2">
         ${field('Sklep',finp('rc_shop','','text','np. Biedronka'))}
         ${field('Kwota (zł)',finp('rc_amount','','text','np. 49.90'))}
@@ -37,8 +37,8 @@ function openReceiptsModal(playerId){
       ${field('Notatki',ftex('rc_notes','','np. Pepsi 2x + Lays'))}
       <div class="field"><label>Zdjęcie paragonu</label>
         <div id="rc_photo_drop" onclick="document.getElementById('rc_photo_inp').click()"
-          style="border:2px dashed #2d3548;border-radius:8px;padding:16px;text-align:center;cursor:pointer;margin-bottom:6px">
-          <div id="rc_photo_preview" style="font-size:13px;color:#64748b">📷 Kliknij aby dodać zdjęcie paragonu</div>
+          style="border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;margin-bottom:6px">
+          <div id="rc_photo_preview" style="font-size:13px;color:var(--text-3)">📷 Kliknij aby dodać zdjęcie paragonu</div>
         </div>
         <input type="file" id="rc_photo_inp" accept="image/*" style="display:none" onchange="previewReceiptPhoto(this)">
         <input type="hidden" id="rc_photo_data" value="">
@@ -190,7 +190,7 @@ async function runReceiptOCR(){
       suggestEl.innerHTML=`<div style="background:#22c55e11;border:1px solid #22c55e33;border-radius:8px;padding:10px;margin-top:8px">
         <div style="font-size:12px;font-weight:700;color:#4ade80;margin-bottom:6px">🎯 Pasujące konkursy dla sklepu "${esc(r.shop)}":</div>
         ${matching.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #1e2a3a;gap:8px">
-          <div style="font-size:12px;color:#f1f5f9">${esc(c.name)}<span style="color:#64748b;font-size:11px"> · do ${c.deadline||'?'}</span></div>
+          <div style="font-size:12px;color:var(--text)">${esc(c.name)}<span style="color:var(--text-3);font-size:11px"> · do ${c.deadline||'?'}</span></div>
           <button onclick="document.getElementById('rc_contest_id')&&(document.getElementById('rc_contest_id').value='${c.id}');this.parentElement.parentElement.parentElement.style.background='#6366f122';this.textContent='✓'"
             style="font-size:11px;padding:3px 8px;background:#22c55e22;color:#4ade80;border:1px solid #22c55e44;border-radius:5px;cursor:pointer;white-space:nowrap">Przypisz</button>
         </div>`).join('')}
@@ -290,7 +290,7 @@ function refreshReceiptList(playerId){
   if(!listEl){ openReceiptsModal(playerId); return; }
   const recs = S.receipts.filter(r => r.playerId === playerId);
   if(recs.length === 0){
-    listEl.innerHTML = '<p style="color:#475569;text-align:center;padding:20px 0">Brak paragonów — dodaj pierwszy</p>';
+    listEl.innerHTML = '<p style="color:var(--text-4);text-align:center;padding:20px 0">Brak paragonów — dodaj pierwszy</p>';
     return;
   }
   listEl.innerHTML = recs.map(r => receiptRowHtml(r)).join('');
@@ -305,31 +305,31 @@ function receiptRowHtml(r){
   }).join(', ');
   const photoSrc = r.photo || r.photo_local || '';
   const photoHtml = photoSrc
-    ? `<img src="${photoSrc}" onclick="showReceiptPhoto('${r.id}')" style="width:56px;height:56px;border-radius:8px;object-fit:cover;cursor:pointer;flex-shrink:0;border:1px solid #2d3548">`
-    : `<div style="width:56px;height:56px;border-radius:8px;background:#1e2a3a;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🧾</div>`;
+    ? `<img src="${photoSrc}" onclick="showReceiptPhoto('${r.id}')" style="width:56px;height:56px;border-radius:8px;object-fit:cover;cursor:pointer;flex-shrink:0;border:1px solid var(--border)">`
+    : `<div style="width:56px;height:56px;border-radius:8px;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🧾</div>`;
   const expHtml = r.expire_date ? (()=>{
     const d=daysLeft(r.expire_date);
     const ec=d<=0?'#ef4444':d<=7?'#f59e0b':d<=30?'#fbbf24':'#64748b';
     const et=d<=0?'⛔ PRZETERMINOWANY!':d<=7?'⚠️ Ważny '+d+'d!':'📅 Ważny do '+fmt(r.expire_date);
     return `<div style="font-size:11px;color:${ec};font-weight:600;margin-top:2px">${et}</div>`;
   })() : '';
-  return `<div style="background:#0a0e1a;border:1px solid #2d3548;border-radius:10px;padding:12px;margin-bottom:8px">
+  return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">
     <div style="display:flex;gap:10px;align-items:flex-start">
       ${photoHtml}
       <div style="flex:1;min-width:0">
-        <div style="font-weight:600;color:#f1f5f9;font-size:14px">${esc(r.shop||'Paragon')}</div>
-        <div style="font-size:12px;color:#64748b">${r.amount?r.amount+' zł · ':''}${fmt(r.date)}${r.receipt_nr?' · nr: '+esc(r.receipt_nr):''}</div>
-        ${r.cash_register?`<div style="font-size:11px;color:#475569">🖨️ Kasa: ${esc(r.cash_register)}</div>`:''}
-        ${r.nip?`<div style="font-size:11px;color:#475569">NIP: ${esc(r.nip)}</div>`:''}
+        <div style="font-weight:600;color:var(--text);font-size:14px">${esc(r.shop||'Paragon')}</div>
+        <div style="font-size:12px;color:var(--text-3)">${r.amount?r.amount+' zł · ':''}${fmt(r.date)}${r.receipt_nr?' · nr: '+esc(r.receipt_nr):''}</div>
+        ${r.cash_register?`<div style="font-size:11px;color:var(--text-4)">🖨️ Kasa: ${esc(r.cash_register)}</div>`:''}
+        ${r.nip?`<div style="font-size:11px;color:var(--text-4)">NIP: ${esc(r.nip)}</div>`:''}
         ${expHtml}
-        ${r.notes?`<div style="font-size:12px;color:#94a3b8;margin-top:2px">${esc(r.notes)}</div>`:''}
+        ${r.notes?`<div style="font-size:12px;color:var(--text-2);margin-top:2px">${esc(r.notes)}</div>`:''}
         <div style="margin-top:4px"><span style="color:${col};font-size:12px;font-weight:600">${label}</span></div>
-        ${usedIn?`<div style="font-size:11px;color:#475569;margin-top:2px">Użyty w: ${esc(usedIn)}</div>`:''}
+        ${usedIn?`<div style="font-size:11px;color:var(--text-4);margin-top:2px">Użyty w: ${esc(usedIn)}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-        <button class="btn-sm" style="background:#1e2a3a;color:#94a3b8;border:1px solid #2d3548;font-size:11px" onclick="editReceipt('${r.id}')">✏️</button>
+        <button class="btn-sm" style="background:var(--bg-hover);color:var(--text-2);border:1px solid var(--border);font-size:11px" onclick="editReceipt('${r.id}')">✏️</button>
         ${!r.settled?`<button class="btn-sm" style="background:#6366f122;color:#818cf8;border:1px solid #6366f133;font-size:11px" onclick="settleReceipt('${r.id}')">Rozlicz</button>`:''}
-        ${r.settled?`<button class="btn-sm" style="background:#2d3548;color:#64748b;font-size:11px" onclick="unsettleReceipt('${r.id}')">Cofnij</button>`:''}
+        ${r.settled?`<button class="btn-sm" style="background:var(--border);color:var(--text-3);font-size:11px" onclick="unsettleReceipt('${r.id}')">Cofnij</button>`:''}
         <button class="btn-sm" style="background:#ef444422;color:#f87171;border:1px solid #ef444433;font-size:11px" onclick="deleteReceipt('${r.id}')">Usuń</button>
       </div>
     </div>
@@ -364,7 +364,7 @@ function editReceipt(id){
   const photoPreviewHtml = `
     <div class="field"><label>Zdjęcie paragonu</label>
       <div id="er_photo_preview" onclick="document.getElementById('er_photo_inp').click()"
-        style="background:#0a0e1a;border:2px dashed #2d3548;border-radius:10px;padding:12px;text-align:center;cursor:pointer;color:#64748b;font-size:13px;min-height:60px;display:flex;align-items:center;justify-content:center">
+        style="background:var(--bg);border:2px dashed var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer;color:var(--text-3);font-size:13px;min-height:60px;display:flex;align-items:center;justify-content:center">
         ${(r.photo||r.photo_local)?`<img src="${r.photo||r.photo_local}" style="max-height:80px;border-radius:6px;object-fit:contain">`:'📷 Kliknij aby zmienić zdjęcie'}
       </div>
       <input type="file" id="er_photo_inp" accept="image/*" capture="environment" style="display:none"
@@ -494,8 +494,8 @@ function deleteReceipt(id){
   document.querySelectorAll('.overlay').forEach(m=>m.remove());
   setTimeout(()=>{
     openModal({title:'🗑 Usuń paragon?',
-      html:`<p style="color:#cbd5e1;margin-bottom:8px">Czy na pewno usunąć:<br><strong style="color:#f1f5f9">${esc(info)}</strong></p>
-      <p style="font-size:12px;color:#64748b">Tej operacji nie można cofnąć.</p>`,
+      html:`<p style="color:#cbd5e1;margin-bottom:8px">Czy na pewno usunąć:<br><strong style="color:var(--text)">${esc(info)}</strong></p>
+      <p style="font-size:12px;color:var(--text-3)">Tej operacji nie można cofnąć.</p>`,
       submitLabel:'Usuń',
       onSubmit:()=>{
         deleteReceiptPhoto(id); // usuń zdjęcie ze Storage
@@ -566,7 +566,7 @@ function renderReceiptsTab(){
   const statusFilters=[['all','Wszystkie'],['free','Wolne'],['used','W użyciu'],['settled','Rozliczone'],['expiring','Wygasające ≤30d']];
 
   const list=filtered.length===0
-    ? '<p style="color:#475569;text-align:center;padding:48px">Brak paragonów</p>'
+    ? '<p style="color:var(--text-4);text-align:center;padding:48px">Brak paragonów</p>'
     : filtered.map(r=>{
         const p=S.players.find(x=>x.id===r.playerId);
         const usedIn=S.entries.filter(e=>e.receiptId===r.id).map(e=>{
@@ -580,17 +580,17 @@ function renderReceiptsTab(){
 
         return `<div class="card" style="border-radius:10px;margin-bottom:10px">
           <div style="display:flex;gap:12px;align-items:flex-start">
-            ${r.photo?`<img src="${r.photo}" onclick="showReceiptPhoto('${r.id}')" style="width:52px;height:52px;border-radius:8px;object-fit:cover;cursor:pointer;flex-shrink:0;border:1px solid #2d3548">`
-              :`<div style="width:52px;height:52px;border-radius:8px;background:#1e2a3a;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🧾</div>`}
+            ${r.photo?`<img src="${r.photo}" onclick="showReceiptPhoto('${r.id}')" style="width:52px;height:52px;border-radius:8px;object-fit:cover;cursor:pointer;flex-shrink:0;border:1px solid var(--border)">`
+              :`<div style="width:52px;height:52px;border-radius:8px;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🧾</div>`}
             <div style="flex:1;min-width:0">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
                 <div>
-                  <div style="font-weight:600;color:#f1f5f9;font-size:14px">${esc(r.shop||'Paragon')}</div>
-                  <div style="font-size:12px;color:#64748b">${r.amount?r.amount+' zł · ':''}${fmt(r.date)}${p?' · <span style="color:#818cf8">'+esc(p.name)+'</span>':(!r.playerId?'<span style="color:#475569"> · nieprzypisany</span>':'')}</div>
+                  <div style="font-weight:600;color:var(--text);font-size:14px">${esc(r.shop||'Paragon')}</div>
+                  <div style="font-size:12px;color:var(--text-3)">${r.amount?r.amount+' zł · ':''}${fmt(r.date)}${p?' · <span style="color:#818cf8">'+esc(p.name)+'</span>':(!r.playerId?'<span style="color:var(--text-4)"> · nieprzypisany</span>':'')}</div>
                   ${expTxt?`<div style="font-size:11px;color:${expCol};font-weight:600;margin-top:2px">${expTxt}</div>`:''}
-                  ${r.notes?`<div style="font-size:11px;color:#94a3b8;margin-top:2px">${esc(r.notes)}</div>`:''}
-              ${r.added_by?`<div style="font-size:10px;color:#475569;margin-top:2px">📱 dodał: ${esc(r.added_by.split('@')[0])}</div>`:''}
-                  ${usedIn.length?`<div style="font-size:11px;color:#475569;margin-top:2px">📎 ${usedIn.join(', ')}</div>`:''}
+                  ${r.notes?`<div style="font-size:11px;color:var(--text-2);margin-top:2px">${esc(r.notes)}</div>`:''}
+              ${r.added_by?`<div style="font-size:10px;color:var(--text-4);margin-top:2px">📱 dodał: ${esc(r.added_by.split('@')[0])}</div>`:''}
+                  ${usedIn.length?`<div style="font-size:11px;color:var(--text-4);margin-top:2px">📎 ${usedIn.join(', ')}</div>`:''}
                 </div>
                 <span style="color:${col};font-size:12px;font-weight:600;flex-shrink:0">${label}</span>
               </div>
@@ -599,7 +599,7 @@ function renderReceiptsTab(){
                   style="font-size:11px;padding:4px 10px;background:#f59e0b22;color:#fbbf24;border:1px solid #f59e0b33;border-radius:6px;cursor:pointer;font-weight:600">
                   👤 Przypisz do gracza</button>`:''}
                 <button onclick="editReceipt('${r.id}')"
-                  style="font-size:11px;padding:4px 10px;background:#1e2a3a;color:#94a3b8;border:1px solid #2d3548;border-radius:6px;cursor:pointer;font-weight:600">
+                  style="font-size:11px;padding:4px 10px;background:var(--bg-hover);color:var(--text-2);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-weight:600">
                   ✏️ Edytuj
                 </button>
                 ${S.entries.filter(e=>e.receiptId===r.id).length===0?`<button onclick="assignReceiptToEntry('${r.id}')"
@@ -609,7 +609,7 @@ function renderReceiptsTab(){
                 ${!r.settled?`<button onclick="settleReceipt('${r.id}');renderTab()"
                   style="font-size:11px;padding:4px 10px;background:#22c55e22;color:#4ade80;border:1px solid #22c55e33;border-radius:6px;cursor:pointer">Rozlicz</button>`:''}
                 ${r.settled?`<button onclick="unsettleReceipt('${r.id}');renderTab()"
-                  style="font-size:11px;padding:4px 10px;background:#1e2a3a;color:#64748b;border:1px solid #2d3548;border-radius:6px;cursor:pointer">Cofnij</button>`:''}
+                  style="font-size:11px;padding:4px 10px;background:var(--bg-hover);color:var(--text-3);border:1px solid var(--border);border-radius:6px;cursor:pointer">Cofnij</button>`:''}
                 <button onclick="deleteReceiptGlobal('${r.id}')"
                   style="font-size:11px;padding:4px 10px;background:#ef444422;color:#f87171;border:1px solid #ef444433;border-radius:6px;cursor:pointer">Usuń</button>
               </div>
@@ -620,7 +620,7 @@ function renderReceiptsTab(){
 
   return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin:0">🧾 Paragony</h1>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text);margin:0">🧾 Paragony</h1>
       <button onclick="addReceiptGlobal()" class="btn-primary btn-sm">+ Dodaj paragon</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
@@ -633,11 +633,11 @@ function renderReceiptsTab(){
       })</button>`).join('')}
     </div>
     <div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap">
-      <select onchange="window.receiptTabPlayer=this.value;render()" style="flex:1;min-width:140px;background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 10px;font-size:13px">
+      <select onchange="window.receiptTabPlayer=this.value;render()" style="flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:13px">
         <option value="">Wszyscy gracze</option>
         ${S.players.map(p=>`<option value="${p.id}" ${receiptTabPlayer===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}
       </select>
-      <select onchange="window.receiptTabAddedBy=this.value;render()" style="flex:1;min-width:140px;background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 10px;font-size:13px">
+      <select onchange="window.receiptTabAddedBy=this.value;render()" style="flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:13px">
         <option value="">Wszyscy dodający</option>
         ${[...new Set(S.receipts.map(r=>r.added_by).filter(Boolean))].map(u=>`<option value="${u}" ${receiptTabAddedBy===u?'selected':''}>${esc(u.split('@')[0])}</option>`).join('')}
       </select>
@@ -654,8 +654,8 @@ function deleteReceiptGlobal(id){
   const r=S.receipts.find(x=>x.id===id);
   const info=r?(r.shop||'Paragon')+(r.receipt_nr?' · nr '+r.receipt_nr:''):'';
   openModal({title:'🗑 Usuń paragon?',
-    html:`<p style="color:#cbd5e1;margin-bottom:8px">Czy na pewno usunąć:<br><strong style="color:#f1f5f9">${esc(info)}</strong></p>
-    <p style="font-size:12px;color:#64748b">Tej operacji nie można cofnąć.</p>`,
+    html:`<p style="color:#cbd5e1;margin-bottom:8px">Czy na pewno usunąć:<br><strong style="color:var(--text)">${esc(info)}</strong></p>
+    <p style="font-size:12px;color:var(--text-3)">Tej operacji nie można cofnąć.</p>`,
     submitLabel:'Usuń',
     onSubmit:()=>{
       deleteReceiptPhoto(id); // usuń zdjęcie ze Storage
@@ -677,7 +677,7 @@ function addReceiptGlobal(){
   ],'');
   openModal({title:'+ Dodaj paragon',html:`
     <div class="field"><label>Gracz (opcjonalnie)</label>${playerSel}</div>
-    <div style="font-size:11px;color:#64748b;margin-top:4px">Możesz przypisać do gracza później</div>`,
+    <div style="font-size:11px;color:var(--text-3);margin-top:4px">Możesz przypisać do gracza później</div>`,
     submitLabel:'Dalej',
     onSubmit:()=>{
       const pid=gv('rg_player')||null;
@@ -714,7 +714,7 @@ function assignReceiptToEntry(receiptId){
     return [e.id,(ct?.name||'?')+' · '+fmt(e.date)];
   })];
   openModal({title:'📎 Przypisz paragon do zgłoszenia',
-    html:`<div style="font-size:13px;color:#94a3b8;margin-bottom:12px">Paragon: <strong>${esc(r.shop||'Paragon')}</strong> · ${r.amount?r.amount+' zł':''}</div>
+    html:`<div style="font-size:13px;color:var(--text-2);margin-bottom:12px">Paragon: <strong>${esc(r.shop||'Paragon')}</strong> · ${r.amount?r.amount+' zł':''}</div>
     <div class="field"><label>Gracz: ${esc(p?.name||'?')}</label>${fsel('assign_entry',opts,'')}</div>`,
     submitLabel:'Przypisz',
     onSubmit:()=>{

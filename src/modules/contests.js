@@ -12,7 +12,7 @@ function resultsDeadlineHtml(date){
 
 function deadlineHtml(date){
   const d=daysLeft(date);
-  if(d===null) return '<span style="color:#475569">—</span>';
+  if(d===null) return '<span style="color:var(--text-4)">—</span>';
   const c=d<0?'#475569':d<=2?'#ef4444':d<=7?'#f59e0b':'#22c55e';
   const t=d<0?'Minął':d===0?'Dziś!':`${d}d`;
   return `<span style="color:${c};font-weight:700;font-size:13px">${t}</span>`;
@@ -31,7 +31,7 @@ function tagsFieldHtml(selected=[]){
       const on=selected.includes(t.id);
       return `<button type="button" onclick="toggleTag('${t.id}',this)"
         data-tagid="${t.id}"
-        style="background:${on?t.color+'33':'#1e2a3a'};color:${on?t.color:'#64748b'};border:1px solid ${on?t.color+'55':'#2d3548'};border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-weight:${on?700:400}"
+        style="background:${on?t.color+'33':'var(--bg-hover)'};color:${on?t.color:'#64748b'};border:1px solid ${on?t.color+'55':'var(--border)'};border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-weight:${on?700:400}"
         >${t.label}</button>`;
     }).join('')+
   '</div></div>';
@@ -42,8 +42,8 @@ function toggleTag(tagId, btn){
   const t=TAGS.find(x=>x.id===tagId);
   if(!t) return;
   if(on){
-    btn.style.background='#1e2a3a'; btn.style.color='#64748b';
-    btn.style.borderColor='#2d3548'; btn.style.fontWeight='400';
+    btn.style.background='var(--bg-hover)'; btn.style.color='var(--text-3)';
+    btn.style.borderColor='var(--border)'; btn.style.fontWeight='400';
   } else {
     btn.style.background=t.color+'33'; btn.style.color=t.color;
     btn.style.borderColor=t.color+'55'; btn.style.fontWeight='700';
@@ -64,8 +64,8 @@ function shopsFieldHtml(selected){
   const val=selected.join(', ');
   return '<div class="field">'+
     '<label>Sklepy (gdzie wymagany zakup)</label>'+
-    '<div style="font-size:11px;color:#475569;margin-bottom:5px">Wpisz nazwy sklepów oddzielone przecinkami. AI uzupełni automatycznie z regulaminu.</div>'+
-    '<input id="c_shops_input" type="text" value="'+esc(val)+'" placeholder="np. Biedronka, Lidl, Żabka" style="background:#0a0e1a;border:1px solid #2d3548;border-radius:8px;color:#f1f5f9;padding:8px 12px;width:100%;font-size:13px;outline:none;box-sizing:border-box">'+
+    '<div style="font-size:11px;color:var(--text-4);margin-bottom:5px">Wpisz nazwy sklepów oddzielone przecinkami. AI uzupełni automatycznie z regulaminu.</div>'+
+    '<input id="c_shops_input" type="text" value="'+esc(val)+'" placeholder="np. Biedronka, Lidl, Żabka" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;width:100%;font-size:13px;outline:none;box-sizing:border-box">'+
     '</div>';
 }
 
@@ -120,21 +120,21 @@ function contestCardHtml(c){
     if(!content) return '';
     const short=content.length<=previewLen;
     return `<div style="margin-top:5px">
-      <span style="font-size:12px;color:#94a3b8">${esc(content.slice(0,previewLen))}${short?'':'…'}</span>
-      ${!short?`<span id="${id}_full" style="display:none;font-size:12px;color:#94a3b8">${esc(content.slice(previewLen))}</span>
+      <span style="font-size:12px;color:var(--text-2)">${esc(content.slice(0,previewLen))}${short?'':'…'}</span>
+      ${!short?`<span id="${id}_full" style="display:none;font-size:12px;color:var(--text-2)">${esc(content.slice(previewLen))}</span>
       <button onclick="const f=document.getElementById('${id}_full');const show=f.style.display==='none';f.style.display=show?'inline':'none';this.textContent=show?'▴ zwiń':'▾ więcej'"
-        style="background:none;border:none;color:#475569;font-size:11px;cursor:pointer;padding:0 4px">▾ więcej</button>`:''}
+        style="background:none;border:none;color:var(--text-4);font-size:11px;cursor:pointer;padding:0 4px">▾ więcej</button>`:''}
     </div>`;
   };
 
-  return `<div class="card" style="border-color:${isUrgent?'#ef444466':hasShops?'#ef444433':'#2d3548'};padding:12px 14px">
+  return `<div class="card" style="border-color:${isUrgent?'#ef444466':hasShops?'#ef444433':'var(--border)'};padding:12px 14px">
 
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
 
       <div style="flex:1;min-width:0">
         <!-- Wiersz 1: nazwa + status + pilne -->
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-          <span style="font-weight:700;color:#f1f5f9;font-size:14px">${esc(c.name)}${c.products?`<span style="font-weight:400;color:#94a3b8;font-size:13px"> (${esc(c.products)})</span>`:''}</span>
+          <span style="font-weight:700;color:var(--text);font-size:14px">${esc(c.name)}${c.products?`<span style="font-weight:400;color:var(--text-2);font-size:13px"> (${esc(c.products)})</span>`:''}</span>
           ${badge(c.status)}
           ${isUrgent?'<span style="font-size:11px;color:#ef4444;font-weight:700">🔴 PILNE</span>':''}
         </div>
@@ -143,8 +143,8 @@ function contestCardHtml(c){
         ${c.prize?`<div style="font-size:13px;color:#fbbf24;margin-bottom:6px">🏆 ${esc(c.prize)}${c.prize_value?' · <span style="color:#fb923c">'+esc(c.prize_value)+'</span>':''}</div>`:''}
 
         <!-- Wiersz 3: meta — agencja · deadline · wyniki -->
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#64748b;margin-bottom:6px">
-          ${ag?`<span style="color:#94a3b8;font-weight:500">${esc(ag.name)}</span><span style="color:#2d3548">·</span>`:''}
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--text-3);margin-bottom:6px">
+          ${ag?`<span style="color:var(--text-2);font-weight:500">${esc(ag.name)}</span><span style="color:#2d3548">·</span>`:''}
           <span>📅 ${fmt(c.deadline)}</span>
           ${deadlineHtml(c.deadline)}
           ${c.results_date?`<span style="color:#2d3548">·</span><span style="color:#8b5cf6">🎯 wyniki: ${fmt(c.results_date)} ${resultsDeadlineHtml(c.results_date)}</span>`:''}
@@ -163,14 +163,14 @@ function contestCardHtml(c){
         ${c.task?`<div style="background:#6366f111;border:1px solid #6366f133;border-radius:6px;padding:6px 10px;margin-bottom:5px;font-size:12px;color:#818cf8"><strong>🎯</strong> ${esc(c.task)}</div>`:''}
 
         <!-- Warunki — zwinięte -->
-        ${c.conditions?`<div style="margin-top:4px"><span style="font-size:11px;color:#475569;font-weight:600">📋 Warunki:</span>${collapseBtn(cid+'_cond','',c.conditions,120)}</div>`:''}
+        ${c.conditions?`<div style="margin-top:4px"><span style="font-size:11px;color:var(--text-4);font-weight:600">📋 Warunki:</span>${collapseBtn(cid+'_cond','',c.conditions,120)}</div>`:''}
 
         <!-- Notatki — zwinięte -->
-        ${c.notes?`<div style="margin-top:3px"><span style="font-size:11px;color:#475569;font-weight:600">💡 Notatki:</span>${collapseBtn(cid+'_notes','',c.notes,80)}</div>`:''}
+        ${c.notes?`<div style="margin-top:3px"><span style="font-size:11px;color:var(--text-4);font-weight:600">💡 Notatki:</span>${collapseBtn(cid+'_notes','',c.notes,80)}</div>`:''}
 
         <!-- Stopka: liczba zgłoszeń + limit -->
         <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">
-          <span style="font-size:12px;color:#475569">${ce.length} zgłoszeń${c.status==='ended'&&ce.length>0?(()=>{
+          <span style="font-size:12px;color:var(--text-4)">${ce.length} zgłoszeń${c.status==='ended'&&ce.length>0?(()=>{
             const w=ce.filter(e=>['won','prize_received','prize_pending'].includes(e.status)).length;
             return w>0?' · <span style="color:#22c55e;font-weight:600">🏆 '+w+' wygranych</span>':' · <span style="color:#ef4444">0 wygranych</span>';
           })():''}</span>
@@ -182,7 +182,7 @@ function contestCardHtml(c){
       <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
         ${c.status==='active'?`<button class="btn-sm" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33;white-space:nowrap" onclick="addEntry('${c.id}')">+ Zgłoś</button>`:''}
         ${c.link?`<button onclick="window.open('${esc(fixUrl(c.link))}','_blank','noopener,noreferrer')" style="padding:4px 10px;background:#6366f122;color:#818cf8;border:1px solid #6366f133;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">🔗 Zgłoś się</button>`:''}
-        ${c.rules_link?`<a href="${esc(fixUrl(c.rules_link))}" target="_blank" style="padding:4px 10px;background:#1e2a3a;color:#64748b;border:1px solid #2d3548;border-radius:7px;text-decoration:none;font-size:12px;white-space:nowrap">📄 Regulamin</a>`:''}
+        ${c.rules_link?`<a href="${esc(fixUrl(c.rules_link))}" target="_blank" style="padding:4px 10px;background:var(--bg-hover);color:var(--text-3);border:1px solid var(--border);border-radius:7px;text-decoration:none;font-size:12px;white-space:nowrap">📄 Regulamin</a>`:''}
         <div style="display:flex;gap:5px">
           <button class="btn-sec btn-sm" onclick="editContest('${c.id}')">✏️</button>
           <button class="btn-sm" style="background:#ef444422;color:#f87171;border:1px solid #ef444433" onclick="deleteContest('${c.id}')">🗑</button>
@@ -227,9 +227,9 @@ function renderContests(){
 
   return `
     <div class="row" style="justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
-      <h1 style="font-size:22px;font-weight:800;color:#f1f5f9">Konkursy</h1>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text)">Konkursy</h1>
       <div class="row" style="gap:8px;flex-wrap:wrap">
-        <select onchange="setContestSort(this.value)" style="background:#1e2a3a;border:1px solid #2d3548;border-radius:7px;color:#94a3b8;padding:5px 10px;font-size:12px;cursor:pointer">
+        <select onchange="setContestSort(this.value)" style="background:var(--bg-hover);border:1px solid var(--border);border-radius:7px;color:var(--text-2);padding:5px 10px;font-size:12px;cursor:pointer">
           <option value="deadline" ${contestSort==='deadline'?'selected':''}>⏰ Termin</option>
           <option value="name" ${contestSort==='name'?'selected':''}>🔤 Nazwa</option>
           <option value="prize" ${contestSort==='prize'?'selected':''}>💰 Nagroda</option>
@@ -242,16 +242,16 @@ function renderContests(){
     <div style="position:relative;margin-bottom:12px">
       <input type="text" id="contest_search_inp" value="${esc(contestSearch)}" placeholder="🔍 Szukaj — nazwa, agencja, nagroda..."
         oninput="contestSearchDebounced(this.value)"
-        style="background:#131929;border:1px solid #2d3548;border-radius:10px;color:#f1f5f9;padding:10px 36px 10px 14px;width:100%;font-size:14px;outline:none;box-sizing:border-box">
-      ${contestSearch?'<button onclick="window.contestSearch=\'\';render()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#64748b;cursor:pointer;font-size:16px">✕</button>':''}
+        style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:10px 36px 10px 14px;width:100%;font-size:14px;outline:none;box-sizing:border-box">
+      ${contestSearch?'<button onclick="window.contestSearch=\'\';render()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-3);cursor:pointer;font-size:16px">✕</button>':''}
     </div>
     <div class="filter-tabs" style="margin-bottom:8px">${filters.map(([v,l])=>`
       <button class="${contestFilter===v?'active':''}" onclick="setContestFilter('${v}')">${l} (${v==='all'?S.contests.length:S.contests.filter(c=>c.status===v).length})</button>`).join('')}
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;align-items:center">
-      <span style="font-size:11px;color:#475569;margin-right:2px">Tagi:</span>
+      <span style="font-size:11px;color:var(--text-4);margin-right:2px">Tagi:</span>
       <button onclick="setContestTag('')"
-        style="padding:3px 10px;font-size:11px;border:none;border-radius:6px;cursor:pointer;background:${!contestTagFilter?'#6366f1':'#1e2a3a'};color:${!contestTagFilter?'#fff':'#64748b'}">
+        style="padding:3px 10px;font-size:11px;border:none;border-radius:6px;cursor:pointer;background:${!contestTagFilter?'#6366f1':'var(--bg-hover)'};color:${!contestTagFilter?'#fff':'#64748b'}">
         Wszystkie
       </button>
       ${TAGS.map(t=>{
@@ -259,12 +259,12 @@ function renderContests(){
         if(cnt===0) return '';
         const on=contestTagFilter===t.id;
         return `<button onclick="setContestTag('${t.id}')"
-          style="padding:3px 10px;font-size:11px;border:1px solid ${on?t.color+'55':'#2d3548'};border-radius:6px;cursor:pointer;background:${on?t.color+'33':'#1e2a3a'};color:${on?t.color:'#64748b'};font-weight:${on?700:400}">
+          style="padding:3px 10px;font-size:11px;border:1px solid ${on?t.color+'55':'var(--border)'};border-radius:6px;cursor:pointer;background:${on?t.color+'33':'var(--bg-hover)'};color:${on?t.color:'#64748b'};font-weight:${on?700:400}">
           ${t.label} <span style="opacity:.7">(${cnt})</span>
         </button>`;
       }).join('')}
     </div>
-    <div id="contests_list">${contestSearch&&!filtered.length?'<p style="color:#475569;text-align:center;padding:48px">Brak wyników dla: <strong>'+esc(contestSearch)+'</strong></p>':(list||'<p style="color:#475569;text-align:center;padding:48px">Brak konkursów w tej kategorii</p>')}`;
+    <div id="contests_list">${contestSearch&&!filtered.length?'<p style="color:var(--text-4);text-align:center;padding:48px">Brak wyników dla: <strong>'+esc(contestSearch)+'</strong></p>':(list||'<p style="color:var(--text-4);text-align:center;padding:48px">Brak konkursów w tej kategorii</p>')}`;
 }
 
 function setContestFilter(f){ window.contestFilter=f; render(); }
@@ -314,8 +314,8 @@ function renderContestList(){
   });
   const html=filtered.map(ct=>contestCardHtml(ct)).join('');
   listEl.innerHTML=html||
-    (sq?`<p style="color:#475569;text-align:center;padding:48px">Brak wyników dla: <strong>${esc(sq)}</strong></p>`
-       :'<p style="color:#475569;text-align:center;padding:48px">Brak konkursów w tej kategorii</p>');
+    (sq?`<p style="color:var(--text-4);text-align:center;padding:48px">Brak wyników dla: <strong>${esc(sq)}</strong></p>`
+       :'<p style="color:var(--text-4);text-align:center;padding:48px">Brak konkursów w tej kategorii</p>');
   // Przywróć focus na pole
   const inp=document.getElementById('contest_search_inp');
   if(inp){ const l=inp.value.length; inp.focus(); inp.setSelectionRange(l,l); }
@@ -331,9 +331,9 @@ function contestForm(c={}){
         oninput="const w=document.getElementById('c_name_warn');if(w)w.style.display=this.value.trim()?'none':'block'">`,
       `<span id="c_name_warn" style="color:#ef4444;font-size:11px;display:${c.name?'none':'block'}">⛔ Nazwa jest wymagana</span>`)}
     ${field('Agencja',fsel('c_agency',agencyOpts(),c.agencyId||''),
-      !c.agencyId?'<span style="color:#64748b;font-size:11px">💡 Bez agencji statystyki będą niepełne</span>':'')}
+      !c.agencyId?'<span style="color:var(--text-3);font-size:11px">💡 Bez agencji statystyki będą niepełne</span>':'')}
     ${field('Nagroda',finp('c_prize',c.prize||'','text','np. 10 000 zł, Samochód'))}
-    ${field('Produkty konkursowe',finp('c_products',c.products||'','text','np. Pepsi, Lay\'s, Tymbark (pojawi się w nawiasie przy nazwie)'),'<span style="font-size:11px;color:#64748b">Opcjonalnie — gdy nazwa konkursu nie wskazuje jakie produkty kupić</span>')}
+    ${field('Produkty konkursowe',finp('c_products',c.products||'','text','np. Pepsi, Lay\'s, Tymbark (pojawi się w nawiasie przy nazwie)'),'<span style="font-size:11px;color:var(--text-3)">Opcjonalnie — gdy nazwa konkursu nie wskazuje jakie produkty kupić</span>')}
     <div class="grid2">
       ${field('Termin zgłoszeń',finp('c_deadline',c.deadline||'','date'),
       !c.deadline?'<span style="color:#f59e0b;font-size:11px">⚠️ Brak terminu — konkurs nie pojawi się w kalendarzu</span>':'')}

@@ -60,7 +60,7 @@ function renderCalendar(){
   });
 
   const eventList=monthEvents.length===0
-    ? '<p style="color:#475569;text-align:center;padding:24px 0;font-size:13px">Brak wydarzeń w tym miesiącu</p>'
+    ? '<p style="color:var(--text-4);text-align:center;padding:24px 0;font-size:13px">Brak wydarzeń w tym miesiącu</p>'
     : monthEvents.map(e=>{
         const ag=S.agencies.find(a=>a.id===e.contest.agencyId);
         const isDeadline=e.type==='deadline';
@@ -73,38 +73,38 @@ function renderCalendar(){
             <span style="font-size:14px;font-weight:700;color:${col};line-height:1">${dd}</span>
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;color:#f1f5f9;font-weight:600">${esc(e.contest.name)}</div>
-            <div style="font-size:11px;color:#64748b">${icon} ${label} · ${esc(ag?.name||'—')}</div>
+            <div style="font-size:13px;color:var(--text);font-weight:600">${esc(e.contest.name)}</div>
+            <div style="font-size:11px;color:var(--text-3)">${icon} ${label} · ${esc(ag?.name||'—')}</div>
           </div>
         </div>`;
       }).join('');
 
   return `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h1 style="font-size:22px;font-weight:800;color:#f1f5f9;margin:0">📅 Kalendarz</h1>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text);margin:0">📅 Kalendarz</h1>
       <button onclick="calToday()" class="btn-sec btn-sm">Dziś</button>
     </div>
 
-    <div style="background:#131929;border:1px solid #1e2a3a;border-radius:12px;padding:14px;margin-bottom:16px">
+    <div style="background:var(--bg-card);border:1px solid var(--border-sub);border-radius:12px;padding:14px;margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <button onclick="calShift(-1)" style="background:#1e2a3a;border:none;border-radius:8px;width:34px;height:34px;color:#94a3b8;cursor:pointer;font-size:16px">‹</button>
-        <span style="font-weight:700;color:#f1f5f9;font-size:15px">${monthNames[m]} ${y}</span>
-        <button onclick="calShift(1)" style="background:#1e2a3a;border:none;border-radius:8px;width:34px;height:34px;color:#94a3b8;cursor:pointer;font-size:16px">›</button>
+        <button onclick="calShift(-1)" style="background:var(--bg-hover);border:none;border-radius:8px;width:34px;height:34px;color:var(--text-2);cursor:pointer;font-size:16px">‹</button>
+        <span style="font-weight:700;color:var(--text);font-size:15px">${monthNames[m]} ${y}</span>
+        <button onclick="calShift(1)" style="background:var(--bg-hover);border:none;border-radius:8px;width:34px;height:34px;color:var(--text-2);cursor:pointer;font-size:16px">›</button>
       </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px">
-        ${['Pn','Wt','Śr','Cz','Pt','So','Nd'].map(d=>`<div style="text-align:center;font-size:11px;color:#475569;font-weight:600">${d}</div>`).join('')}
+        ${['Pn','Wt','Śr','Cz','Pt','So','Nd'].map(d=>`<div style="text-align:center;font-size:11px;color:var(--text-4);font-weight:600">${d}</div>`).join('')}
       </div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
         ${cells}
       </div>
-      <div style="display:flex;gap:14px;margin-top:12px;font-size:11px;color:#64748b">
+      <div style="display:flex;gap:14px;margin-top:12px;font-size:11px;color:var(--text-3)">
         <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4444"></span> Termin zgłoszeń</span>
         <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#8b5cf6"></span> Wyniki</span>
       </div>
     </div>
 
-    <div style="font-weight:700;color:#f1f5f9;margin-bottom:8px;font-size:14px">Wydarzenia — ${monthNames[m]} ${y}</div>
-    <div style="background:#131929;border:1px solid #1e2a3a;border-radius:12px;padding:6px 14px">
+    <div style="font-weight:700;color:var(--text);margin-bottom:8px;font-size:14px">Wydarzenia — ${monthNames[m]} ${y}</div>
+    <div style="background:var(--bg-card);border:1px solid var(--border-sub);border-radius:12px;padding:6px 14px">
       ${eventList}
     </div>`;
 }
@@ -120,10 +120,10 @@ function calDayClick(ds){
     const ag=S.agencies.find(a=>a.id===e.contest.agencyId);
     const isDeadline=e.type==='deadline';
     const col=isDeadline?'#ef4444':'#8b5cf6';
-    return `<div style="padding:10px;background:#0a0e1a;border:1px solid ${col}33;border-radius:8px;margin-bottom:8px">
-      <div style="font-weight:700;color:#f1f5f9;font-size:13px">${esc(e.contest.name)}</div>
+    return `<div style="padding:10px;background:var(--bg);border:1px solid ${col}33;border-radius:8px;margin-bottom:8px">
+      <div style="font-weight:700;color:var(--text);font-size:13px">${esc(e.contest.name)}</div>
       <div style="font-size:11px;color:${col};margin-top:2px">${isDeadline?'⏰ Termin zgłoszeń':'🏆 Ogłoszenie wyników'}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px">${esc(ag?.name||'—')}${e.contest.prize?' · '+esc(e.contest.prize):''}</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:2px">${esc(ag?.name||'—')}${e.contest.prize?' · '+esc(e.contest.prize):''}</div>
       ${e.contest.task?`<div style="font-size:11px;color:#818cf8;margin-top:4px"><strong>🎯</strong> ${esc(e.contest.task)}</div>`:''}
     </div>`;
   }).join('');

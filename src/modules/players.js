@@ -96,19 +96,19 @@ function renderPlayers(){
     }).join('');
     const initials=p.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
     const avatarHtml=p.photo
-      ? `<img src="${p.photo}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #2d3548">`
+      ? `<img src="${p.photo}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border)">`
       : `<div style="width:48px;height:48px;border-radius:50%;background:#6366f133;border:2px solid #6366f144;display:flex;align-items:center;justify-content:center;font-weight:700;color:#818cf8;font-size:16px;flex-shrink:0">${initials}</div>`;
     return `<div class="card">
       <div class="row" style="justify-content:space-between;align-items:flex-start;gap:10px">
         <div class="row" style="gap:12px;align-items:flex-start;flex:1">
           ${avatarHtml}
           <div style="min-width:0">
-            <div style="font-weight:700;color:#f1f5f9;font-size:16px">${esc(p.name)}</div>
-            <div style="font-size:13px;color:#64748b;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-              ${p.email?`<span>${esc(p.email)}</span><button onclick="copyField('${esc(p.email)}',this)" style="background:none;border:none;color:#475569;cursor:pointer;font-size:12px;padding:1px 4px" title="Kopiuj email">📋</button>`:''}
-              ${p.phone?`<span>· ${esc(p.phone)}</span><button onclick="copyField('${esc(p.phone)}',this)" style="background:none;border:none;color:#475569;cursor:pointer;font-size:12px;padding:1px 4px" title="Kopiuj telefon">📋</button>`:''}
+            <div style="font-weight:700;color:var(--text);font-size:16px">${esc(p.name)}</div>
+            <div style="font-size:13px;color:var(--text-3);display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+              ${p.email?`<span>${esc(p.email)}</span><button onclick="copyField('${esc(p.email)}',this)" style="background:none;border:none;color:var(--text-4);cursor:pointer;font-size:12px;padding:1px 4px" title="Kopiuj email">📋</button>`:''}
+              ${p.phone?`<span>· ${esc(p.phone)}</span><button onclick="copyField('${esc(p.phone)}',this)" style="background:none;border:none;color:var(--text-4);cursor:pointer;font-size:12px;padding:1px 4px" title="Kopiuj telefon">📋</button>`:''}
             </div>
-            <div style="font-size:12px;color:#475569;margin-top:4px">${pe.length} zgłoszeń · <span style="color:#22c55e">${pe.filter(e=>e.status==='won').length} wygranych</span></div>
+            <div style="font-size:12px;color:var(--text-4);margin-top:4px">${pe.length} zgłoszeń · <span style="color:#22c55e">${pe.filter(e=>e.status==='won').length} wygranych</span></div>
           </div>
         </div>
         <div class="row" style="gap:6px;flex-shrink:0">
@@ -117,25 +117,25 @@ function renderPlayers(){
           <button class="btn-sm" style="background:#ef444422;color:#f87171;border:1px solid #ef444433" onclick="deletePlayer('${p.id}')">🗑</button>
         </div>
       </div>
-      ${S.agencies.length?`<div class="row" style="margin-top:10px;gap:6px"><span style="font-size:11px;color:#475569">Profile agencji:</span>${profTags}</div>`:''}
+      ${S.agencies.length?`<div class="row" style="margin-top:10px;gap:6px"><span style="font-size:11px;color:var(--text-4)">Profile agencji:</span>${profTags}</div>`:''}
     </div>`;
   }).join('');
 
   return `
     <div class="row" style="justify-content:space-between;margin-bottom:20px">
-      <h1 style="font-size:22px;font-weight:800;color:#f1f5f9">Gracze</h1>
+      <h1 style="font-size:22px;font-weight:800;color:var(--text)">Gracze</h1>
       <div class="row" style="gap:8px">
         ${S.players.length?`<button class="btn-sec btn-sm" onclick="exportPlayersXLSX()" title="Eksportuj graczy do Excela">📊 Excel</button>`:''}
         <button class="btn-primary" onclick="addPlayer()">+ Dodaj gracza</button>
       </div>
     </div>
-    ${list||'<p style="color:#475569;text-align:center;padding:48px">Brak graczy — dodaj pierwszego!</p>'}`;
+    ${list||'<p style="color:var(--text-4);text-align:center;padding:48px">Brak graczy — dodaj pierwszego!</p>'}`;
 }
 
 function photoFieldHtml(existing){
   return `<div class="field"><label>Zdjęcie (opcjonalne)</label>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <div id="photo_preview" style="width:56px;height:56px;border-radius:50%;overflow:hidden;background:#1e2a3a;border:2px solid #2d3548;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">
+      <div id="photo_preview" style="width:56px;height:56px;border-radius:50%;overflow:hidden;background:var(--bg-hover);border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">
         ${existing?`<img src="${existing}" style="width:100%;height:100%;object-fit:cover">`:'👤'}
       </div>
       <div style="flex:1">

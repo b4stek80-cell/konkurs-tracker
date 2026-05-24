@@ -5,10 +5,10 @@
 // ── Zaproszenia do rodziny ────────────────────────────────────────────────────
 async function showInviteModal(){
   const html=`<div style="text-align:center;padding:10px 0">
-    <div style="font-size:13px;color:#94a3b8;margin-bottom:16px">Wygeneruj kod zaproszenia dla członka rodziny. Kod jest ważny 7 dni.</div>
-    <div id="invite_code_display" style="font-size:28px;font-weight:800;color:#f1f5f9;letter-spacing:4px;background:#0a0e1a;border:2px solid #6366f133;border-radius:12px;padding:16px;margin-bottom:12px">—</div>
+    <div style="font-size:13px;color:var(--text-2);margin-bottom:16px">Wygeneruj kod zaproszenia dla członka rodziny. Kod jest ważny 7 dni.</div>
+    <div id="invite_code_display" style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:4px;background:var(--bg);border:2px solid #6366f133;border-radius:12px;padding:16px;margin-bottom:12px">—</div>
     <button onclick="generateAndShowCode()" style="padding:10px 24px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">🎲 Generuj kod</button>
-    <div id="invite_code_copy" style="margin-top:10px;font-size:12px;color:#64748b"></div>
+    <div id="invite_code_copy" style="margin-top:10px;font-size:12px;color:var(--text-3)"></div>
   </div>`;
   openModal({title:'🔗 Zaproś do rodziny', html, submitLabel:'Zamknij', onSubmit:()=>true});
 }
